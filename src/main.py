@@ -1,8 +1,10 @@
-# 強化学習勉強用プログラム GridWorld編 メイン処理
+# 強化学習勉強用サンプルプログラム メイン処理
+
+from grid_world import GridWorld
 
 # メイン処理
 def main():
-    pass
+    gw = GridWorld()
 
 if __name__ == '__main__':
     main()
