@@ -2,6 +2,10 @@
 
 from enum import Enum, auto
 
+# 盤面のサイズ
+GRID_WIDTH = 5
+GRID_HEIGHT = 5
+
 # 移動方向
 class Direction(Enum):
     Up = auto() # 上
