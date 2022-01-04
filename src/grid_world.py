@@ -11,6 +11,11 @@ class GridWorld:
 
     # 移動する
     def move(self, direction):
+        # すでにゴールにいる場合は移動しない
+        if self.cell_idx in self.goal_idx:
+            print(f'すでにゴール座標 {self.cell_idx} にいます。')
+            return self.cell_idx
+
         idx_diff = {
             Direction.Up: [0, -1],
             Direction.Down: [0, 1],
