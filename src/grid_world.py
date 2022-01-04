@@ -9,7 +9,8 @@ class GridWorld:
     # コンストラクタ
     def __init__(self):
         # 盤面の作成
-        self.wall, self.pos, self.goal_pos = self._create_grid()
+        self.wall, self.init_pos, self.goal_pos = self._create_grid()
+        self.pos = copy(self.init_pos)
 
     # 移動する
     def move(self, direction):
@@ -24,6 +25,10 @@ class GridWorld:
 
         if self._can_move(direction):
             self.pos = copy(next_pos)
+
+    # 盤面のリセット
+    def reset(self):
+        self.pos = copy(self.init_pos)
 
     # 移動できる方向の検索
     def get_available_direction(self):
