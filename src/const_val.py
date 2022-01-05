@@ -35,6 +35,10 @@ WALL = [
     (True, False, True, False),
 ]
 
+# ゴール時の報酬
+# GOAL_POSの要素数と同じ数の報酬を定義すること
+GOAL_REWARD = [100]
+
 # 移動方向
 class Direction(Enum):
     Up = auto() # 上

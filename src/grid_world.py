@@ -10,12 +10,30 @@ class GridWorld:
     def __init__(self):
         self.pos = copy(INITIAL_POS)
 
-    # 移動する
+    # 移動+報酬の取得
     def move(self, direction):
         next_pos = self._get_next_pos(direction)
 
-        if self._can_move(direction):
-            self.pos = copy(next_pos)
+        # 報酬の確定
+        reward = None
+        if not self._can_move(direction):
+            # 移動できない場合は想定しない
+            # エージェントは事前に移動可能な方向をget_available_directionで取得する想定
+            return reward
+        elif next_pos in GOAL_POS:
+            # ゴール時
+            i = GOAL_POS.index(next_pos)
+            reward = GOAL_REWARD[i]
+            self.reset()
+            return reward
+        else:
+            # 通常移動時
+            reward = 0
+
+        # 移動の実施
+        self.pos = copy(next_pos)
+
+        return reward
 
     # 盤面のリセット
     def reset(self):
@@ -66,4 +84,3 @@ class GridWorld:
             return False
 
         return True
-
