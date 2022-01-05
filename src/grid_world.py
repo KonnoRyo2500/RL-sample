@@ -14,14 +14,7 @@ class GridWorld:
 
     # 移動する
     def move(self, direction):
-        pos_diff = {
-            Direction.Up: [0, -1],
-            Direction.Down: [0, 1],
-            Direction.Left: [-1, 0],
-            Direction.Right: [1, 0],
-        }[direction]
-
-        next_pos = [i + d for i, d in zip(self.pos, pos_diff)]
+        next_pos = self._get_next_pos(direction)
 
         if self._can_move(direction):
             self.pos = copy(next_pos)
@@ -39,8 +32,8 @@ class GridWorld:
 
         return available_direction
 
-    # 指定した方向に移動できるかどうか判定する
-    def _can_move(self, direction):
+    # 与えられた方向から、移動先のマスを取得する
+    def _get_next_pos(self, direction):
         pos_diff = {
             Direction.Up: [0, -1],
             Direction.Down: [0, 1],
@@ -49,6 +42,12 @@ class GridWorld:
         }[direction]
 
         next_pos = [i + d for i, d in zip(self.pos, pos_diff)]
+
+        return next_pos
+
+    # 指定した方向に移動できるかどうか判定する
+    def _can_move(self, direction):
+        next_pos = self._get_next_pos(direction)
 
         # すでにゴールにいる場合は移動しない
         if self.pos in self.goal_pos:
