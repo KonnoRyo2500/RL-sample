@@ -1,6 +1,6 @@
 # 強化学習勉強用サンプルプログラム メイン処理
 
-from grid_world import GridWorld
+from environment.grid_world import GridWorld
 
 # メイン処理
 def main():

@@ -2,7 +2,7 @@
 
 from copy import copy
 
-from const_val import *
+from common.const_val import *
 
 # Grid World環境クラス
 class GridWorld:
