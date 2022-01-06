@@ -43,7 +43,7 @@ class QAgent(AgentBase):
         actions = self.env.get_available_direction()
 
         # 行動aを決定する
-        action = self._select_action(state, actions)
+        action = self._select_action_with_epsilon_greedy(state, actions)
 
         # 次状態s'と報酬rを得る
         reward = self.env.move(action)
@@ -74,18 +74,23 @@ class QAgent(AgentBase):
 
         return init_q_func
 
-    # 行動を選択する
-    def _select_action(self, state, actions):
-        # ε-greedy法を用いる。
+    # ε-greedy法で行動を選択する
+    def _select_action_with_epsilon_greedy(self, state, actions):
         v = random.uniform(0, 1)
         if v <= EPSILON:
+            # ランダム選択
             random_idx = random.randint(0, len(actions) - 1)
             return actions[random_idx]
         else:
-            # Q(s, a)が最大となるようなaは複数存在しうるので、そのような場合は
-            # ランダムにaを選択することにする
-            q_values = [self.q_func[(state, a)] for a in actions]
-            greedy_indices = [i for i, q in enumerate(q_values) if q == max(q_values)]
-            greedy_idx = greedy_indices[random.randint(0, len(greedy_indices) - 1)]
-            return actions[greedy_idx]
+            # greedy法による選択
+            return self._select_action_with_greedy(state, actions)
+
+    # greedy法で行動を選択する
+    def _select_action_with_greedy(self, state, actions):
+        # Q(s, a)が最大となるようなaは複数存在しうるので、そのような場合は
+        # ランダムにaを選択することにする
+        q_values = [self.q_func[(state, a)] for a in actions]
+        greedy_indices = [i for i, q in enumerate(q_values) if q == max(q_values)]
+        greedy_idx = greedy_indices[random.randint(0, len(greedy_indices) - 1)]
+        return actions[greedy_idx]
 
