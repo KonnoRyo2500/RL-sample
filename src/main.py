@@ -7,6 +7,7 @@ from agent.q_agent import QAgent
 def main():
     gw = GridWorld()
     q = QAgent(gw)
+    q.train()
 
 if __name__ == '__main__':
     main()
