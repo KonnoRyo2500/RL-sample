@@ -22,6 +22,8 @@ class QAgent(AgentBase):
     def train(self):
         for i in range(N_STEP):
             self.step()
+            if self.env.get_pos() in GOAL_POS:
+                self.env.reset()
 
         pprint(self.q_func)
         self.env.reset()
@@ -48,8 +50,11 @@ class QAgent(AgentBase):
         next_state = self.env.get_pos()
 
         # max(a')Q(s', a')を得る
-        next_actions = self.env.get_available_direction()
-        next_max_q = max([self.q_func[(next_state, a)] for a in next_actions])
+        if next_state in GOAL_POS:
+            next_max_q = 0
+        else:
+            next_actions = self.env.get_available_direction()
+            next_max_q = max([self.q_func[(next_state, a)] for a in next_actions])
 
         # Q(s, a)はそのまま記述すると表記が長いため、短い名前の変数に入れておく
         q = self.q_func[(state, action)]

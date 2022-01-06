@@ -24,8 +24,6 @@ class GridWorld:
             # ゴール時
             i = GOAL_POS.index(next_pos)
             reward = GOAL_REWARD[i]
-            self.reset()
-            return reward
         else:
             # 通常移動時
             reward = 0
