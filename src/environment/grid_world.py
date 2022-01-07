@@ -1,6 +1,9 @@
 # 強化学習勉強用サンプルプログラム Grid World環境クラス
 
 from copy import copy
+from itertools import product
+
+from openpyxl import load_workbook
 
 from common.const_val import *
 
@@ -86,3 +89,26 @@ class GridWorld:
             return False
 
         return True
+
+    # 盤面を記述したExcelシートから、壁の情報を読み込む
+    def _read_wall(self, grid_xlsx_path):
+        book = load_workbook(grid_xlsx_path)
+        # シート名が変更されていても読み込めるようにしておく。
+        sheet = book._sheets[0]
+        wall = {}
+
+        # 各マスの上下左右にある壁を取得する。
+        # 壁は、Excelシートの罫線で記述される。
+        # マスは、A1セルから記述されるものとする。
+        for x, y in product(range(GRID_WIDTH), range(GRID_HEIGHT)):
+            c, r = x + 1, y + 1
+            cell = sheet.cell(column=c, row=r)
+            wall_around_cell = (
+                cell.border.top.style is not None,
+                cell.border.bottom.style is not None,
+                cell.border.left.style is not None,
+                cell.border.right.style is not None,
+            )
+            wall[(x, y)] = wall_around_cell
+
+        return wall
