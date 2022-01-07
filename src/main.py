@@ -8,6 +8,7 @@ def main():
     gw = GridWorld()
     q = QAgent(gw)
     q.train()
+    q.play()
 
 if __name__ == '__main__':
     main()
