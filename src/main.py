@@ -2,6 +2,7 @@
 
 from environment.grid_world import GridWorld
 from agent.q_agent import QAgent
+from agent.sarsa_agent import SarsaAgent
 
 # メイン処理
 def main():
@@ -9,6 +10,11 @@ def main():
     q = QAgent(gw)
     q.train()
     q.play()
+
+    gw.reset()
+    s = SarsaAgent(gw)
+    s.train()
+    s.play()
 
 if __name__ == '__main__':
     main()
