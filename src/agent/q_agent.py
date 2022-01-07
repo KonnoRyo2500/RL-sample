@@ -36,9 +36,11 @@ class QAgent(AgentBase):
             step_count += 1
             if step_count > step_limit:
                 print(f'行動数が上限({step_limit}回)を超えたため、エピソードを終了します。')
-                return
+                break
 
-        print(f'エピソードをプレイし、報酬 {reward} が得られました。')
+        if reward != 0:
+            print(f'エピソードをプレイし、報酬 {reward} が得られました。')
+        self.env.reset()
 
     # 学習の実行
     def train(self):
