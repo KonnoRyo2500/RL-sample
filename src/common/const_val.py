@@ -16,25 +16,6 @@ INITIAL_POS = (0, 0)
 # 複数存在することを想定し、リストにする。
 GOAL_POS = [(GRID_WIDTH - 1, GRID_HEIGHT - 1)]
 
-# 壁情報
-# 定義方法はドキュメントを参照。
-# 事前に手書きやペイントソフト、Excelなどで盤面を描いておくと良い。
-WALL = [
-    (False, False, True, False), # 1列目の垂直方向の壁情報
-    (True, False, False, True, False), # 1列目の水平方向の壁情報
-
-    (True, True, False, False),
-    (False, False, True, False, True),
-
-    (False, False, True, False),
-    (False, True, True, True, False),
-
-    (False, False, False, True),
-    (False, False, True, False, True),
-
-    (True, False, True, False),
-]
-
 # ゴール時の報酬
 # GOAL_POSの要素数と同じ数の報酬を定義すること
 GOAL_REWARD = [100]

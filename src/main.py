@@ -6,7 +6,7 @@ from agent.sarsa_agent import SarsaAgent
 
 # メイン処理
 def main():
-    gw = GridWorld()
+    gw = GridWorld(wall_xlsx='..\\Grid.xlsx')
     q = QAgent(gw)
     q.train()
     q.play()

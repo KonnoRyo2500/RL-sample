@@ -10,8 +10,9 @@ from common.const_val import *
 # Grid World環境クラス
 class GridWorld:
     # コンストラクタ
-    def __init__(self):
+    def __init__(self, wall_xlsx):
         self.pos = copy(INITIAL_POS)
+        self.wall = self._read_wall(wall_xlsx)
 
     # 移動+報酬の取得
     def move(self, direction):
@@ -47,6 +48,8 @@ class GridWorld:
             if self._can_move(Direction[name]):
                 available_direction.append(Direction[name])
 
+        if len(available_direction) == 0:
+            print(self.pos)
         return available_direction
 
     # 現在位置の取得
@@ -73,26 +76,28 @@ class GridWorld:
         # すでにゴールにいる場合は移動しない
         if self.pos in GOAL_POS:
             return False
+        next_x, next_y = next_pos
 
         # 範囲内の判定
-        x_is_in_grid = (0 <= next_pos[0] < GRID_WIDTH)
-        y_is_in_grid = (0 <= next_pos[1] < GRID_HEIGHT)
+        x_is_in_grid = (0 <= next_x < GRID_WIDTH)
+        y_is_in_grid = (0 <= next_y < GRID_HEIGHT)
         if (not x_is_in_grid) or (not y_is_in_grid):
             return False
 
         # 壁の判定
-        hit_vertical_wall = ((direction == Direction.Left) and (WALL[2 * next_pos[1]][next_pos[0]])) or \
-                            ((direction == Direction.Right) and (WALL[2 * next_pos[1]][next_pos[0] - 1]))
-        hit_horizontal_wall = ((direction == Direction.Up) and (WALL[2 * next_pos[1] + 1][next_pos[0]])) or \
-                              ((direction == Direction.Down) and (WALL[2 * next_pos[1] - 1][next_pos[0]]))
-        if hit_vertical_wall or hit_horizontal_wall:
+        wall = self.wall[self.pos]
+        hit_wall = ((direction == Direction.Up) and (wall[0])) or \
+                   ((direction == Direction.Down) and (wall[1])) or \
+                   ((direction == Direction.Left) and (wall[2])) or \
+                   ((direction == Direction.Right) and (wall[3]))
+        if hit_wall:
             return False
 
         return True
 
     # 盤面を記述したExcelシートから、壁の情報を読み込む
-    def _read_wall(self, grid_xlsx_path):
-        book = load_workbook(grid_xlsx_path)
+    def _read_wall(self, grid_xlsx):
+        book = load_workbook(grid_xlsx)
         # シート名が変更されていても読み込めるようにしておく。
         sheet = book._sheets[0]
         wall = {}
