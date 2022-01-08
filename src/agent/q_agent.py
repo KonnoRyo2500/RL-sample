@@ -17,7 +17,6 @@ class QAgent(AgentBase):
     # 学習した価値関数を基にエピソードをプレイ
     def play(self):
         step_count = 0
-        step_limit = 100
         state = self.env.get_pos()
         while state not in GOAL_POS:
             # greedy法で行動を選択
@@ -34,8 +33,8 @@ class QAgent(AgentBase):
             # 無限ループ防止のため、一定回数移動してもゴールしなかったら
             # エピソードを途中で打ち切る
             step_count += 1
-            if step_count > step_limit:
-                print(f'行動数が上限({step_limit}回)を超えたため、エピソードを終了します。')
+            if step_count > PLAY_STEP_LIMIT:
+                print(f'行動数が上限({PLAY_STEP_LIMIT}回)を超えたため、エピソードを終了します。')
                 break
 
         if reward != 0:

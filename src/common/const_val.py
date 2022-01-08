@@ -31,6 +31,9 @@ class Direction(Enum):
 # 学習時のエピソード数
 N_EPISODE = 10000
 
+# プレイ時のステップ上限
+PLAY_STEP_LIMIT = 100
+
 # ε-greedy法でランダムに行動選択する確率
 EPSILON = 0.10
 
