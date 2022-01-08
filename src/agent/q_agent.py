@@ -44,17 +44,20 @@ class QAgent(AgentBase):
 
     # 学習の実行
     def train(self):
-        for i in range(N_STEP):
-            self.step()
-            if self.env.get_pos() in GOAL_POS:
-                self.env.reset()
+        for i in range(N_EPISODE):
+            self.episode()
 
         pprint(self.q_func)
         self.env.reset()
 
-    # エピソードの実行
+    # エピソードの実行(学習用)
     def episode(self):
-        pass
+        state = self.env.get_pos()
+        while state not in GOAL_POS:
+            self.step()
+            state = self.env.get_pos()
+
+        self.env.reset()
 
     # 1ステップ実行
     def step(self):

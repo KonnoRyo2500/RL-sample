@@ -20,7 +20,7 @@ class AgentBase(metaclass=ABCMeta):
     def train(self):
         pass
 
-    # エピソードの実行
+    # # エピソードの実行(学習用)
     @abstractmethod
     def episode(self):
         pass

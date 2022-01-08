@@ -28,8 +28,8 @@ class Direction(Enum):
     Right = auto() # 右
 
 ### エージェントのハイパーパラメータ ### 
-# 学習時のステップ数
-N_STEP = 10000
+# 学習時のエピソード数
+N_EPISODE = 10000
 
 # ε-greedy法でランダムに行動選択する確率
 EPSILON = 0.10
