@@ -2,6 +2,7 @@
 
 import argparse
 
+from common.config import read_config
 from environment.grid_world import GridWorld
 from agent.q_agent import QAgent
 from agent.sarsa_agent import SarsaAgent
@@ -10,24 +11,33 @@ from agent.sarsa_agent import SarsaAgent
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--grid_xlsx',
+        '--config',
         type=str,
-        default='..\\Grid.xlsx',
-        help='盤面情報を定義するExcelシートへのパス。')
+        default='..\\config\\config.yaml',
+        help='設定ファイル(YAML)のパス。')
     args = parser.parse_args()
     return args
 
 # メイン処理
 def main():
+    # 設定値の取得
     args = parse_args()
+    config = read_config(args.config)
+    grid_world_config = config['environment']['grid_world']
+    q_config = config['agent']['q_learning']
+    sarsa_config = config['agent']['sarsa']
 
-    gw = GridWorld(wall_xlsx=args.grid_xlsx)
-    q = QAgent(gw)
+    # 環境の作成
+    gw = GridWorld(config=grid_world_config)
+
+    # Q学習で学習+プレイ
+    q = QAgent(gw, q_config)
     q.train()
     q.play()
 
+    # SARSAで学習+プレイ
     gw.reset()
-    s = SarsaAgent(gw)
+    s = SarsaAgent(gw, sarsa_config)
     s.train()
     s.play()
 

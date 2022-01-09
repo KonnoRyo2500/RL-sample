@@ -10,13 +10,15 @@ from common.const_val import *
 # Grid World環境クラス
 class GridWorld:
     # コンストラクタ
-    def __init__(self, wall_xlsx):
-        self.pos = copy(INITIAL_POS)
-        self.wall = self._read_wall(wall_xlsx)
+    def __init__(self, config):
+        self.config = self._adjust_config(config)
+        self.pos = copy(self.config['initial_pos'])
+        self.wall = self._read_wall()
 
     # 移動+報酬の取得
     def move(self, direction):
         next_pos = self._get_next_pos(direction)
+        goal_pos = self.config['goal_pos']
 
         # 報酬の確定
         reward = None
@@ -24,10 +26,10 @@ class GridWorld:
             # 移動できない場合は想定しない
             # エージェントは事前に移動可能な方向をget_available_directionで取得する想定
             return reward
-        elif next_pos in GOAL_POS:
+        elif next_pos in goal_pos:
             # ゴール時
-            i = GOAL_POS.index(next_pos)
-            reward = GOAL_REWARD[i]
+            i = goal_pos.index(next_pos)
+            reward = self.config['goal_reward'][i]
         else:
             # 通常移動時
             reward = 0
@@ -39,7 +41,7 @@ class GridWorld:
 
     # 盤面のリセット
     def reset(self):
-        self.pos = copy(INITIAL_POS)
+        self.pos = copy(self.config['initial_pos'])
 
     # 移動できる方向の検索
     def get_available_direction(self):
@@ -55,6 +57,17 @@ class GridWorld:
     # 現在位置の取得
     def get_pos(self):
         return self.pos
+
+    # 設定値の取得
+    def get_config(self):
+        return self.config
+
+    # 設定値を一部調整する(型の変換などを行う)
+    def _adjust_config(self, config):
+        config['initial_pos'] = tuple(config['initial_pos'])
+        config['goal_pos'] = [tuple(p) for p in config['goal_pos']]
+
+        return config
 
     # 与えられた方向から、移動先のマスを取得する
     def _get_next_pos(self, direction):
@@ -74,13 +87,13 @@ class GridWorld:
         next_pos = self._get_next_pos(direction)
 
         # すでにゴールにいる場合は移動しない
-        if self.pos in GOAL_POS:
+        if self.pos in self.config['goal_pos']:
             return False
         next_x, next_y = next_pos
 
         # 範囲内の判定
-        x_is_in_grid = (0 <= next_x < GRID_WIDTH)
-        y_is_in_grid = (0 <= next_y < GRID_HEIGHT)
+        x_is_in_grid = (0 <= next_x < self.config['width'])
+        y_is_in_grid = (0 <= next_y < self.config['height'])
         if (not x_is_in_grid) or (not y_is_in_grid):
             return False
 
@@ -96,8 +109,8 @@ class GridWorld:
         return True
 
     # 盤面を記述したExcelシートから、壁の情報を読み込む
-    def _read_wall(self, grid_xlsx):
-        book = load_workbook(grid_xlsx)
+    def _read_wall(self):
+        book = load_workbook(self.config['grid_file'])
         # シート名が変更されていても読み込めるようにしておく。
         sheet = book._sheets[0]
         wall = {}
@@ -105,7 +118,8 @@ class GridWorld:
         # 各マスの上下左右にある壁を取得する。
         # 壁は、Excelシートの罫線で記述される。
         # マスは、A1セルから記述されるものとする。
-        for x, y in product(range(GRID_WIDTH), range(GRID_HEIGHT)):
+        width, height = self.config['width'], self.config['height']
+        for x, y in product(range(width), range(height)):
             c, r = x + 1, y + 1
             cell = sheet.cell(column=c, row=r)
             wall_around_cell = (

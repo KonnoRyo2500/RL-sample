@@ -1,0 +1,27 @@
+# 環境設定
+environment:
+    grid_world:
+        grid_file: C:\Users\enc91\Desktop\hobby\AI\RL\sample\Grid.xlsx # 盤面を定義するファイル。
+        # マスの座標は(x座標, y座標)で表し、左上のマスが(0, 0)。
+        width: 5 # 盤面の幅。
+        height: 5 # 盤面の高さ。
+        initial_pos: [0, 0] # 初期座標。
+        goal_pos: [[4, 4]] # ゴール座標。複数定義しても良い。
+        goal_reward: [100] # ゴール時の報酬。goal_posの要素数と同じにすること。
+
+# エージェントのハイパーパラメータ
+agent:
+    q_learning:
+        num_episode: 10000 # 学習に用いるエピソード数。
+        step_limit: 100 # プレイ時のステップ数上限。
+        epsilon: 0.1 # ε-greedy法でランダムに行動を選択する確率。
+        gamma: 0.8 # 割引率。
+        alpha: 0.5 # 学習率。
+
+    sarsa:
+        num_episode: 10000 # 学習に用いるエピソード数。
+        step_limit: 100 # プレイ時のステップ数上限。
+        epsilon: 0.1 # ε-greedy法でランダムに行動を選択する確率。
+        gamma: 0.8 # 割引率。
+        alpha: 0.5 # 学習率。
+

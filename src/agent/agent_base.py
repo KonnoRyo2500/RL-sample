@@ -7,8 +7,9 @@ from abc import ABCMeta, abstractmethod
 # 具体的な強化学習アルゴリズムはサブクラスで実装すること。
 class AgentBase(metaclass=ABCMeta):
     # コンストラクタ
-    def __init__(self, env):
+    def __init__(self, env, config):
         self.env = env
+        self.config = config
 
     # 学習した価値関数を基にエピソードをプレイ
     @abstractmethod

@@ -7,8 +7,8 @@ from common.const_val import *
 # 行動価値関数の更新式以外はQAgentと同じなので、QAgentを継承して実装する
 class SarsaAgent(QAgent):
     # コンストラクタ
-    def __init__(self, env):
-        super().__init__(env)
+    def __init__(self, env, config):
+        super().__init__(env, config)
         self.next_action = None # 前回のステップで求めた行動a'
 
     # 1ステップ実行
@@ -32,7 +32,7 @@ class SarsaAgent(QAgent):
         next_state = self.env.get_pos()
 
         # Q(s', a')を得る
-        if next_state in GOAL_POS:
+        if next_state in self.env_config['goal_pos']:
             next_q = 0
             self.next_action = None
         else:
@@ -45,6 +45,6 @@ class SarsaAgent(QAgent):
         q = self.q_func[(state, action)]
 
         # 行動価値関数Q(s, a)を更新する
-        td_error = reward + GAMMA * next_q - q
-        self.q_func[(state, action)] = q + ALPHA * td_error
+        td_error = reward + self.config['gamma'] * next_q - q
+        self.q_func[(state, action)] = q + self.config['alpha'] * td_error
 
