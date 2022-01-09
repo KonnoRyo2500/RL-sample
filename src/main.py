@@ -15,31 +15,45 @@ def parse_args():
         type=str,
         default='..\\config\\config.yaml',
         help='設定ファイル(YAML)のパス。')
+    parser.add_argument(
+        '--method',
+        type=str,
+        default='q_learning',
+        choices=['q_learning', 'sarsa'],
+        help='利用する強化学習アルゴリズム。')
     args = parser.parse_args()
     return args
+
+# エージェントの作成
+def create_agent(method, env, config):
+    agent_class = {
+        'q_learning': QAgent,
+        'sarsa': SarsaAgent,
+    }[method]
+    agent_config = {
+        'q_learning': config['q_learning'],
+        'sarsa': config['sarsa'],
+    }[method]
+
+    agent = agent_class(env, agent_config)
+
+    return agent
 
 # メイン処理
 def main():
     # 設定値の取得
     args = parse_args()
     config = read_config(args.config)
-    grid_world_config = config['environment']['grid_world']
-    q_config = config['agent']['q_learning']
-    sarsa_config = config['agent']['sarsa']
 
     # 環境の作成
-    gw = GridWorld(config=grid_world_config)
+    gw = GridWorld(config=config['environment']['grid_world'])
 
-    # Q学習で学習+プレイ
-    q = QAgent(gw, q_config)
-    q.train()
-    q.play()
+    # エージェントの作成
+    agent = create_agent(args.method, gw, config['agent'])
 
-    # SARSAで学習+プレイ
-    gw.reset()
-    s = SarsaAgent(gw, sarsa_config)
-    s.train()
-    s.play()
+    # 選択したエージェントで学習+プレイ
+    agent.train()
+    agent.play()
 
 if __name__ == '__main__':
     main()
