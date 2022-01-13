@@ -6,6 +6,7 @@ from common.config import read_config
 from environment.grid_world import GridWorld
 from agent.q_agent import QAgent
 from agent.sarsa_agent import SarsaAgent
+from agent.monte_carlo_agent import MonteCarloAgent
 
 # コマンドライン引数の解析
 def parse_args():
@@ -19,7 +20,7 @@ def parse_args():
         '--method',
         type=str,
         default='q_learning',
-        choices=['q_learning', 'sarsa'],
+        choices=['q_learning', 'sarsa', 'monte_carlo'],
         help='利用する強化学習アルゴリズム。')
     args = parser.parse_args()
     return args
@@ -29,10 +30,12 @@ def create_agent(method, env, config):
     agent_class = {
         'q_learning': QAgent,
         'sarsa': SarsaAgent,
+        'monte_carlo': MonteCarloAgent,
     }[method]
     agent_config = {
         'q_learning': config['q_learning'],
         'sarsa': config['sarsa'],
+        'monte_carlo': config['monte_carlo'],
     }[method]
 
     agent = agent_class(env, agent_config)

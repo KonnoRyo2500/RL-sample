@@ -25,3 +25,6 @@ agent:
         gamma: 0.8 # 割引率。
         alpha: 0.5 # 学習率。
 
+    monte_carlo:
+        gamma: 0.8 # 割引率。
+
