@@ -8,6 +8,9 @@ from agent.q_agent import QAgent
 from agent.sarsa_agent import SarsaAgent
 from agent.monte_carlo_agent import MonteCarloAgent
 
+# アルゴリズム名
+METHODS = ['q_learning', 'sarsa', 'monte_carlo']
+
 # コマンドライン引数の解析
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -20,23 +23,18 @@ def parse_args():
         '--method',
         type=str,
         default='q_learning',
-        choices=['q_learning', 'sarsa', 'monte_carlo'],
+        choices=METHODS,
         help='利用する強化学習アルゴリズム。')
     args = parser.parse_args()
     return args
 
 # エージェントの作成
 def create_agent(method, env, config):
-    agent_class = {
-        'q_learning': QAgent,
-        'sarsa': SarsaAgent,
-        'monte_carlo': MonteCarloAgent,
-    }[method]
-    agent_config = {
-        'q_learning': config['q_learning'],
-        'sarsa': config['sarsa'],
-        'monte_carlo': config['monte_carlo'],
-    }[method]
+    agent_classes = [QAgent, SarsaAgent, MonteCarloAgent]
+    agent_configs = [config['q_learning'], config['sarsa'], config['monte_carlo']]
+
+    agent_class = dict(zip(METHODS, agent_classes))[method]
+    agent_config = dict(zip(METHODS, agent_configs))[method]
 
     agent = agent_class(env, agent_config)
 
