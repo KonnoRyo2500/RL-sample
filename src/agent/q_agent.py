@@ -18,18 +18,16 @@ class QAgent(AgentBase):
     def play(self):
         step_count = 0
         step_limit = self.config['step_limit']
-        state = self.env.get_state()
         while not self.env.is_terminal_state():
+            # 状態を取得(表示用)
+            state = self.env.get_state()
+
             # greedy法で行動を選択
-            actions = self.env.get_actions()
-            action = self._select_action_with_greedy(state, actions)
+            action = self._select_action_with_greedy()
             print(f'状態 {state} で行動 {action} を選択しました。')
 
             # 行動する
             reward = self.env.exec_action(action)
-
-            # 状態を更新
-            state = self.env.get_state()
 
             # 無限ループ防止のため、一定回数移動してもゴールしなかったら
             # エピソードを途中で打ち切る
@@ -63,14 +61,11 @@ class QAgent(AgentBase):
     def step(self):
         # 更新式: Q(s, a) = Q(s, a) + α(r + γmax(a')Q(s', a') - Q(s, a))
 
-        # 現状態sを得る
+        # 現状態sを取得
         state = self.env.get_state()
 
-        # 状態sで可能な行動を得る
-        actions = self.env.get_actions()
-
         # 行動aを決定する
-        action = self._select_action_with_epsilon_greedy(state, actions)
+        action = self._select_action_with_epsilon_greedy()
 
         # 次状態s'と報酬rを得る
         reward = self.env.exec_action(action)
@@ -99,20 +94,23 @@ class QAgent(AgentBase):
         return init_q_func
 
     # ε-greedy法で行動を選択する
-    def _select_action_with_epsilon_greedy(self, state, actions):
+    def _select_action_with_epsilon_greedy(self):
         v = random.uniform(0, 1)
+        actions = self.env.get_actions()
         if v <= self.config['epsilon']:
             # ランダム選択
             random_idx = random.randint(0, len(actions) - 1)
             return actions[random_idx]
         else:
             # greedy法による選択
-            return self._select_action_with_greedy(state, actions)
+            return self._select_action_with_greedy()
 
     # greedy法で行動を選択する
-    def _select_action_with_greedy(self, state, actions):
+    def _select_action_with_greedy(self):
         # Q(s, a)が最大となるようなaは複数存在しうるので、そのような場合は
         # ランダムにaを選択することにする
+        state = self.env.get_state()
+        actions = self.env.get_actions()
         q_values = [self.q_func[(state, a)] for a in actions]
         greedy_indices = [i for i, q in enumerate(q_values) if q == max(q_values)]
         greedy_idx = greedy_indices[random.randint(0, len(greedy_indices) - 1)]

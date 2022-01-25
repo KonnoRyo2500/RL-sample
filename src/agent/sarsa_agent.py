@@ -25,7 +25,7 @@ class SarsaAgent(QAgent):
         if self.next_action is not None:
             action = self.next_action
         else:
-            action = self._select_action_with_epsilon_greedy(state, actions)
+            action = self._select_action_with_epsilon_greedy()
 
         # 次状態s'と報酬rを得る
         reward = self.env.exec_action(action)
@@ -37,7 +37,7 @@ class SarsaAgent(QAgent):
             self.next_action = None
         else:
             next_actions = self.env.get_actions()
-            next_action = self._select_action_with_epsilon_greedy(next_state, next_actions)
+            next_action = self._select_action_with_epsilon_greedy()
             next_q = self.q_func[(next_state, next_action)]
             self.next_action = next_action
 
