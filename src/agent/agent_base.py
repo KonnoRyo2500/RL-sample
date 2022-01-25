@@ -4,29 +4,20 @@ from abc import ABCMeta, abstractmethod
 
 # エージェントベースクラス
 # このクラスのインスタンスは作成できない(抽象クラス)
-# 具体的な強化学習アルゴリズムはサブクラスで実装すること。
 class AgentBase(metaclass=ABCMeta):
+    # 具体的な強化学習アルゴリズムはサブクラスで実装すること。
+
     # コンストラクタ
     def __init__(self, env, config):
         self.env = env
         self.config = config
 
-    # 学習した価値関数を基にエピソードをプレイ
+    # 学習済みエージェントにエピソードをプレイさせる
     @abstractmethod
     def play(self):
         pass
 
-    # 学習の実行
+    # エージェントを学習させる
     @abstractmethod
     def train(self):
-        pass
-
-    # # エピソードの実行(学習用)
-    @abstractmethod
-    def episode(self):
-        pass
-
-    # 1ステップ実行
-    @abstractmethod
-    def step(self):
         pass

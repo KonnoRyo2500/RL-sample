@@ -15,7 +15,7 @@ class QAgent(AgentBase):
         self.env_config = self.env.get_config()
         self.q_func = self._make_initial_q_function()
 
-    # 学習した価値関数を基にエピソードをプレイ
+    # 学習済みエージェントにエピソードをプレイさせる
     def play(self):
         step_count = 0
         step_limit = self.config['step_limit']
@@ -43,7 +43,7 @@ class QAgent(AgentBase):
             print(f'エピソードをプレイし、報酬 {reward} が得られました。')
         self.env.reset()
 
-    # 学習の実行
+    # エージェントを学習させる
     def train(self):
         for i in range(self.config['num_episode']):
             self.episode()

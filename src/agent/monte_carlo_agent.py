@@ -15,11 +15,3 @@ class MonteCarloAgent(AgentBase):
     # 学習の実行
     def train(self):
         pass
-
-    # # エピソードの実行(学習用)
-    def episode(self):
-        pass
-
-    # 1ステップ実行
-    def step(self):
-        pass
