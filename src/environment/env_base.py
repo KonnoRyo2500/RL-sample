@@ -10,8 +10,9 @@ class EnvironmentBase(metaclass=ABCMeta):
         self.config = config
 
     # 現状態で可能な行動を取得
+    # require_allをTrueにすると、現状態にかかわらず環境で定義されているすべての行動を取得できる
     @abstractmethod
-    def get_actions(self):
+    def get_actions(self, require_all=False):
         pass
 
     # 指定された行動を実行し、報酬を得る

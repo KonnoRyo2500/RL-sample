@@ -12,25 +12,24 @@ class QAgent(AgentBase):
     # コンストラクタ
     def __init__(self, env, config):
         super().__init__(env, config)
-        self.env_config = self.env.get_config()
         self.q_func = self._make_initial_q_function()
 
     # 学習済みエージェントにエピソードをプレイさせる
     def play(self):
         step_count = 0
         step_limit = self.config['step_limit']
-        state = self.env.get_pos()
-        while state not in self.env_config['goal_pos']:
+        state = self.env.get_state()
+        while not self.env.is_terminal_state():
             # greedy法で行動を選択
-            actions = self.env.get_available_direction()
+            actions = self.env.get_actions()
             action = self._select_action_with_greedy(state, actions)
             print(f'状態 {state} で行動 {action} を選択しました。')
 
             # 行動する
-            reward = self.env.move(action)
+            reward = self.env.exec_action(action)
 
             # 状態を更新
-            state = self.env.get_pos()
+            state = self.env.get_state()
 
             # 無限ループ防止のため、一定回数移動してもゴールしなかったら
             # エピソードを途中で打ち切る
@@ -53,10 +52,10 @@ class QAgent(AgentBase):
 
     # エピソードの実行(学習用)
     def episode(self):
-        state = self.env.get_pos()
-        while state not in self.env_config['goal_pos']:
+        state = self.env.get_state()
+        while not self.env.is_terminal_state():
             self.step()
-            state = self.env.get_pos()
+            state = self.env.get_state()
 
         self.env.reset()
 
@@ -65,23 +64,23 @@ class QAgent(AgentBase):
         # 更新式: Q(s, a) = Q(s, a) + α(r + γmax(a')Q(s', a') - Q(s, a))
 
         # 現状態sを得る
-        state = self.env.get_pos()
+        state = self.env.get_state()
 
         # 状態sで可能な行動を得る
-        actions = self.env.get_available_direction()
+        actions = self.env.get_actions()
 
         # 行動aを決定する
         action = self._select_action_with_epsilon_greedy(state, actions)
 
         # 次状態s'と報酬rを得る
-        reward = self.env.move(action)
-        next_state = self.env.get_pos()
+        reward = self.env.exec_action(action)
+        next_state = self.env.get_state()
 
         # max(a')Q(s', a')を得る
-        if next_state in self.env_config['goal_pos']:
+        if self.env.is_terminal_state():
             next_max_q = 0
         else:
-            next_actions = self.env.get_available_direction()
+            next_actions = self.env.get_actions()
             next_max_q = max([self.q_func[(next_state, a)] for a in next_actions])
 
         # Q(s, a)はそのまま記述すると表記が長いため、短い名前の変数に入れておく
@@ -94,13 +93,8 @@ class QAgent(AgentBase):
     # 行動価値関数を初期化して返す
     def _make_initial_q_function(self):
         init_q_func = {}
-        width = self.env_config['width']
-        height = self.env_config['height']
-        for x, y in product(range(width), range(height)):
-            for name in Direction._member_names_:
-                state = (x, y)
-                action = Direction[name]
-                init_q_func[(state, action)] = 0
+        for state, action in product(self.env.get_all_states(), self.env.get_actions(require_all=True)):
+            init_q_func[(state, action)] = 0
 
         return init_q_func
 

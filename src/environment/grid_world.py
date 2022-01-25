@@ -6,23 +6,38 @@ from itertools import product
 from openpyxl import load_workbook
 
 from common.const_val import *
+from environment.env_base import EnvironmentBase
 
 # Grid World環境クラス
-class GridWorld:
+class GridWorld(EnvironmentBase):
     # コンストラクタ
     def __init__(self, config):
+        super().__init__(config)
         self.config = self._adjust_config(config)
         self.pos = copy(self.config['initial_pos'])
         self.wall = self._read_wall()
 
-    # 移動+報酬の取得
-    def move(self, direction):
-        next_pos = self._get_next_pos(direction)
+    # 現状態で可能な行動を取得
+    def get_actions(self, require_all=False):
+        actions = []
+
+        if require_all:
+            actions = [dir for dir in Direction]
+        else:
+            for dir in Direction:
+                if self._can_move(dir):
+                    actions.append(dir)
+
+        return actions
+
+    # 指定された行動を実行し、報酬を得る
+    def exec_action(self, action):
+        next_pos = self._get_next_pos(action)
         goal_pos = self.config['goal_pos']
 
         # 報酬の確定
         reward = None
-        if not self._can_move(direction):
+        if not self._can_move(action):
             # 移動できない場合は想定しない
             # エージェントは事前に移動可能な方向をget_available_directionで取得する想定
             return reward
@@ -39,28 +54,22 @@ class GridWorld:
 
         return reward
 
+    # 現在の状態を取得
+    def get_state(self):
+        return self.pos
+
+    # とりうるすべての状態を取得
+    def get_all_states(self):
+        width, height = self.config['width'], self.config['height']
+        return [(x, y) for x, y in product(range(width), range(height))]
+
+    # 現在の状態が終端状態かどうかを返す
+    def is_terminal_state(self):
+        return self.pos in self.config['goal_pos']
+
     # 盤面のリセット
     def reset(self):
         self.pos = copy(self.config['initial_pos'])
-
-    # 移動できる方向の検索
-    def get_available_direction(self):
-        available_direction = []
-        for name in Direction._member_names_:
-            if self._can_move(Direction[name]):
-                available_direction.append(Direction[name])
-
-        if len(available_direction) == 0:
-            print(self.pos)
-        return available_direction
-
-    # 現在位置の取得
-    def get_pos(self):
-        return self.pos
-
-    # 設定値の取得
-    def get_config(self):
-        return self.config
 
     # 設定値を一部調整する(型の変換などを行う)
     def _adjust_config(self, config):

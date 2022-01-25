@@ -16,10 +16,10 @@ class SarsaAgent(QAgent):
         # 更新式: Q(s, a) = Q(s, a) + α(r + γQ(s', a') - Q(s, a))
 
         # 現状態sを得る
-        state = self.env.get_pos()
+        state = self.env.get_state()
 
         # 状態sで可能な行動を得る
-        actions = self.env.get_available_direction()
+        actions = self.env.get_actions()
 
         # 行動aを決定する
         if self.next_action is not None:
@@ -28,15 +28,15 @@ class SarsaAgent(QAgent):
             action = self._select_action_with_epsilon_greedy(state, actions)
 
         # 次状態s'と報酬rを得る
-        reward = self.env.move(action)
-        next_state = self.env.get_pos()
+        reward = self.env.exec_action(action)
+        next_state = self.env.get_state()
 
         # Q(s', a')を得る
-        if next_state in self.env_config['goal_pos']:
+        if self.env.is_terminal_state():
             next_q = 0
             self.next_action = None
         else:
-            next_actions = self.env.get_available_direction()
+            next_actions = self.env.get_actions()
             next_action = self._select_action_with_epsilon_greedy(next_state, next_actions)
             next_q = self.q_func[(next_state, next_action)]
             self.next_action = next_action
