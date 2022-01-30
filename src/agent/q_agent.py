@@ -43,22 +43,22 @@ class QAgent(AgentBase):
     # エージェントを学習させる
     def train(self):
         for i in range(self.config['num_episode']):
-            self.episode()
+            self._episode()
 
         pprint(self.q_func)
         self.env.reset()
 
     # エピソードの実行(学習用)
-    def episode(self):
+    def _episode(self):
         state = self.env.get_state()
         while not self.env.is_terminal_state():
-            self.step()
+            self._step()
             state = self.env.get_state()
 
         self.env.reset()
 
     # 1ステップ実行
-    def step(self):
+    def _step(self):
         # 更新式: Q(s, a) = Q(s, a) + α(r + γmax(a')Q(s', a') - Q(s, a))
 
         # 現状態sを取得

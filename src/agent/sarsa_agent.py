@@ -12,7 +12,7 @@ class SarsaAgent(QAgent):
         self.next_action = None # 前回のステップで求めた行動a'
 
     # 1ステップ実行
-    def step(self):
+    def _step(self):
         # 更新式: Q(s, a) = Q(s, a) + α(r + γQ(s', a') - Q(s, a))
 
         # 現状態sを得る
