@@ -27,4 +27,6 @@ agent:
 
     monte_carlo:
         gamma: 0.8 # 割引率。
+        num_playout: 100 # 各状態ごとのプレイアウト回数。
+        step_limit: 500 # 各プレイアウトを打ち切るステップ数の上限。
 

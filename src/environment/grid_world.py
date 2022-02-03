@@ -58,6 +58,11 @@ class GridWorld(EnvironmentBase):
     def get_state(self):
         return self.pos
 
+    # 状態を変更する
+    # 必要な時以外は使用しないこと
+    def set_state(self, state):
+        self.pos = state
+
     # とりうるすべての状態を取得
     def get_all_states(self):
         width, height = self.config['width'], self.config['height']
