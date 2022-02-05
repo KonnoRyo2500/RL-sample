@@ -24,18 +24,24 @@ class MonteCarloAgent(AgentBase):
         #       R = r0 + γr1 + γ^(2)r2 + ... + γ^(T-1)rT
         #    を得る。
         # 3) 2)を一定回数繰り返し、sにおける平均収益avg(R)を計算する。
+        # ※ただし、終端状態での状態価値関数の値は、その終端状態での報酬値とする。
         # 4) V(s) = avg(R)として完了。
         # Note: モンテカルロ法には複数の亜種が存在するが、
         #       ここでは一番シンプルな方法を選択した。
-        # TODO: 終端状態の状態価値関数の値が常に0になってしまうので、
-        #       別の値を入れておきたい。そうしないと、プレイ時にgreedy方策をとった場合
-        #       終端状態にたどりつけず無限ループになる可能性がある。
 
         for s in self.env.get_all_states():
             # 一定回数プレイアウトを繰り返し、平均収益を求める
             profit_sum = 0
             for i in range(self.config['num_playout']):
-                profit_sum += self._playout(s)
+                profit = self._playout(s)
+                if profit is None:
+                    profit_sum = None
+                    break
+                else:
+                    profit_sum += profit
+
+            if profit_sum is None:
+                continue
 
             avg_profit = profit_sum / self.config['num_playout']
 
@@ -46,13 +52,16 @@ class MonteCarloAgent(AgentBase):
 
     # プレイアウトの実行
     def _playout(self, init_state):
-        num_step = 0
-        profit = 0 # プレイアウトの収益
-        contribution_rate = 1.0 # 寄与率。収益の計算に使う
-
         # 初期状態を設定
         self.env.set_state(init_state)
 
+        # 初期状態が終端状態であれば、プレイアウトは実施しない
+        if self.env.is_terminal_state():
+            return None
+
+        num_step = 0
+        profit = 0 # プレイアウトの収益
+        contribution_rate = 1.0 # 寄与率。収益の計算に使う
         while not self.env.is_terminal_state():
             # 行動aを選択する
             action = self._select_action_randomly()
@@ -62,6 +71,11 @@ class MonteCarloAgent(AgentBase):
             profit += (reward * contribution_rate)
             num_step += 1
             contribution_rate *= self.config['gamma']
+
+            # ただし、終端状態での状態価値関数の値はその終端状態での報酬値とする
+            if self.env.is_terminal_state():
+                terminal_state = self.env.get_state()
+                self.v_func[terminal_state] = reward
 
             # 無限ループ防止のため、一定の回数行動しても終端にたどり着かなければ打ち止め
             if num_step > self.config['step_limit']:
