@@ -14,7 +14,29 @@ class MonteCarloAgent(AgentBase):
 
     # 学習した価値関数を基にエピソードをプレイ
     def play(self):
-        pass
+        step_count = 0
+        step_limit = self.config['play_step_limit']
+        while not self.env.is_terminal_state():
+            # 状態を取得(表示用)
+            state = self.env.get_state()
+
+            # greedy法で行動を選択
+            action = self._select_action_with_greedy()
+            print(f'状態 {state} で行動 {action} を選択しました。')
+
+            # 行動する
+            reward = self.env.exec_action(action)
+
+            # 無限ループ防止のため、一定回数移動してもゴールしなかったら
+            # エピソードを途中で打ち切る
+            step_count += 1
+            if step_count > step_limit:
+                print(f'行動数が上限({step_limit}回)を超えたため、エピソードを終了します。')
+                break
+
+        if reward != 0:
+            print(f'エピソードをプレイし、報酬 {reward} が得られました。')
+        self.env.reset()
 
     # 学習の実行
     def train(self):
@@ -57,9 +79,10 @@ class MonteCarloAgent(AgentBase):
 
         # 初期状態が終端状態であれば、プレイアウトは実施しない
         if self.env.is_terminal_state():
+            self.env.reset()
             return None
 
-        num_step = 0
+        step_count = 0
         profit = 0 # プレイアウトの収益
         contribution_rate = 1.0 # 寄与率。収益の計算に使う
         while not self.env.is_terminal_state():
@@ -69,7 +92,7 @@ class MonteCarloAgent(AgentBase):
             # 行動aを行い、報酬rを得る
             reward = self.env.exec_action(action)
             profit += (reward * contribution_rate)
-            num_step += 1
+            step_count += 1
             contribution_rate *= self.config['gamma']
 
             # ただし、終端状態での状態価値関数の値はその終端状態での報酬値とする
@@ -78,7 +101,7 @@ class MonteCarloAgent(AgentBase):
                 self.v_func[terminal_state] = reward
 
             # 無限ループ防止のため、一定の回数行動しても終端にたどり着かなければ打ち止め
-            if num_step > self.config['step_limit']:
+            if step_count > self.config['playout_step_limit']:
                 break
 
         # 環境をリセット
@@ -92,6 +115,26 @@ class MonteCarloAgent(AgentBase):
         idx = random.randint(0, len(actions) - 1)
 
         return actions[idx]
+
+    # greedy法で行動を選択する
+    def _select_action_with_greedy(self):
+        original_state = self.env.get_state()
+        max_v = None
+        selected_action = None
+
+        # 行動後の状態価値関数の値が最大となるような行動を選択する
+        for action in self.env.get_actions():
+            self.env.exec_action(action)
+            state = self.env.get_state()
+
+            if (max_v is None) or (self.v_func[state] > max_v):
+                selected_action = action
+                max_v = self.v_func[state]
+
+            # 状態を元に戻す
+            self.env.set_state(original_state)
+
+        return selected_action
 
     # 状態価値関数を初期化して返す
     def _make_initial_v_function(self):
