@@ -51,7 +51,7 @@ class MonteCarloAgent(AgentBase):
         # Note: モンテカルロ法には複数の亜種が存在するが、
         #       ここでは一番シンプルな方法を選択した。
 
-        for s in self.env.get_all_states():
+        for s in self.env.get_state_space():
             # 一定回数プレイアウトを繰り返し、平均収益を求める
             profit_sum = 0
             for i in range(self.config['num_playout']):
@@ -139,7 +139,7 @@ class MonteCarloAgent(AgentBase):
     # 状態価値関数を初期化して返す
     def _make_initial_v_function(self):
         init_v_func = {}
-        for state in self.env.get_all_states():
+        for state in self.env.get_state_space():
             init_v_func[state] = 0
 
         return init_v_func

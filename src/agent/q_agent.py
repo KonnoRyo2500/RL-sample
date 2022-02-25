@@ -75,7 +75,7 @@ class QAgent(AgentBase):
         if self.env.is_terminal_state():
             next_max_q = 0
         else:
-            next_actions = self.env.get_actions()
+            next_actions = self.env.get_action_space()
             next_max_q = max([self.q_func[(next_state, a)] for a in next_actions])
 
         # Q(s, a)はそのまま記述すると表記が長いため、短い名前の変数に入れておく
@@ -88,7 +88,7 @@ class QAgent(AgentBase):
     # 行動価値関数を初期化して返す
     def _make_initial_q_function(self):
         init_q_func = {}
-        for state, action in product(self.env.get_all_states(), self.env.get_actions(require_all=True)):
+        for state, action in product(self.env.get_state_space(), self.env.get_action_space()):
             init_q_func[(state, action)] = 0
 
         return init_q_func
@@ -96,7 +96,7 @@ class QAgent(AgentBase):
     # ε-greedy法で行動を選択する
     def _select_action_with_epsilon_greedy(self):
         v = random.uniform(0, 1)
-        actions = self.env.get_actions()
+        actions = self.env.get_action_space()
         if v <= self.config['epsilon']:
             # ランダム選択
             random_idx = random.randint(0, len(actions) - 1)
@@ -110,7 +110,7 @@ class QAgent(AgentBase):
         # Q(s, a)が最大となるようなaは複数存在しうるので、そのような場合は
         # ランダムにaを選択することにする
         state = self.env.get_state()
-        actions = self.env.get_actions()
+        actions = self.env.get_action_space()
         q_values = [self.q_func[(state, a)] for a in actions]
         greedy_indices = [i for i, q in enumerate(q_values) if q == max(q_values)]
         greedy_idx = greedy_indices[random.randint(0, len(greedy_indices) - 1)]

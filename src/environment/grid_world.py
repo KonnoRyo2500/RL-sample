@@ -17,18 +17,9 @@ class GridWorld(EnvironmentBase):
         self.pos = copy(self.config['initial_pos'])
         self.wall = self._read_wall()
 
-    # 現状態で可能な行動を取得
-    def get_actions(self, require_all=False):
-        actions = []
-
-        if require_all:
-            actions = [dir for dir in Direction]
-        else:
-            for dir in Direction:
-                if self._can_move(dir):
-                    actions.append(dir)
-
-        return actions
+    # 環境の行動空間を取得
+    def get_action_space(self):
+        return [dir for dir in Direction]
 
     # 指定された行動を実行し、報酬を得る
     def exec_action(self, action):
@@ -36,11 +27,9 @@ class GridWorld(EnvironmentBase):
         goal_pos = self.config['goal_pos']
 
         # 報酬の確定
-        reward = None
         if not self._can_move(action):
-            # 移動できない場合は想定しない
-            # エージェントは事前に移動可能な方向をget_available_directionで取得する想定
-            return reward
+            # 「行動できない」=「行動しても何も起こらない」とみなす
+            return 0 # TODO: 定数化するかどうか、報酬は0で良いか検討
         elif next_pos in goal_pos:
             # ゴール時
             i = goal_pos.index(next_pos)
@@ -54,25 +43,21 @@ class GridWorld(EnvironmentBase):
 
         return reward
 
+    # 環境の状態空間を取得
+    # 状態が多すぎて(もしくは無限に存在して)取得できない場合はNoneを返す
+    def get_state_space(self):
+        width, height = self.config['width'], self.config['height']
+        return [(x, y) for x, y in product(range(width), range(height))]
+
     # 現在の状態を取得
     def get_state(self):
         return self.pos
-
-    # 状態を変更する
-    # 必要な時以外は使用しないこと
-    def set_state(self, state):
-        self.pos = state
-
-    # とりうるすべての状態を取得
-    def get_all_states(self):
-        width, height = self.config['width'], self.config['height']
-        return [(x, y) for x, y in product(range(width), range(height))]
 
     # 現在の状態が終端状態かどうかを返す
     def is_terminal_state(self):
         return self.pos in self.config['goal_pos']
 
-    # 盤面のリセット
+    # 環境をリセットする
     def reset(self):
         self.pos = copy(self.config['initial_pos'])
 

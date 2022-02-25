@@ -9,10 +9,9 @@ class EnvironmentBase(metaclass=ABCMeta):
     def __init__(self, config):
         self.config = config
 
-    # 現状態で可能な行動を取得
-    # require_allをTrueにすると、現状態にかかわらず環境で定義されているすべての行動を取得できる
+    # 環境の行動空間を取得
     @abstractmethod
-    def get_actions(self, require_all=False):
+    def get_action_space(self):
         pass
 
     # 指定された行動を実行し、報酬を得る
@@ -20,15 +19,15 @@ class EnvironmentBase(metaclass=ABCMeta):
     def exec_action(self, action):
         pass
 
+    # 環境の状態空間を取得
+    # 状態が多すぎて(もしくは無限に存在して)取得できない場合はNoneを返す
+    @abstractmethod
+    def get_state_space(self):
+        pass
+
     # 現在の状態を取得
     @abstractmethod
     def get_state(self):
-        pass
-
-    # とりうるすべての状態を取得
-    # 状態が多すぎて(もしくは無限に存在して)取得できない場合はNoneを返す
-    @abstractmethod
-    def get_all_states(self):
         pass
 
     # 現在の状態が終端状態かどうかを返す
