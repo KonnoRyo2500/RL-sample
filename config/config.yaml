@@ -27,7 +27,8 @@ agent:
 
     monte_carlo:
         gamma: 0.8 # 割引率。
-        num_playout: 100 # 各状態ごとのプレイアウト回数。
-        play_step_limit: 100 # プレイ時のステップ数上限。
+        epsilon: 0.1 # ε-greedy法でランダムに行動を選択する確率。
+        num_playout: 10000 # 学習に用いるプレイアウト数。
+        play_step_limit: 500 # プレイ時のステップ数上限。
         playout_step_limit: 500 # 各プレイアウトを打ち切るステップ数の上限。
 
