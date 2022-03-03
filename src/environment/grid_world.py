@@ -17,9 +17,13 @@ class GridWorld(EnvironmentBase):
         self.pos = copy(self.config['initial_pos'])
         self.wall = self._read_wall()
 
-    # 環境の行動空間を取得
-    def get_action_space(self):
+    # 環境全体における行動空間を取得
+    def get_whole_action_space(self):
         return [dir for dir in Direction]
+
+    # 現状態における行動空間を取得
+    def get_current_action_space(self):
+        return [dir for dir in Direction if self._can_move(dir)]
 
     # 指定された行動を実行し、報酬を得る
     def exec_action(self, action):

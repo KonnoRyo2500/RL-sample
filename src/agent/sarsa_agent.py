@@ -18,8 +18,8 @@ class SarsaAgent(QAgent):
         # 現状態sを得る
         state = self.env.get_state()
 
-        # 環境の行動空間を得る
-        actions = self.env.get_action_space()
+        # 現状態sでの行動空間を得る
+        actions = self.env.get_current_action_space()
 
         # 行動aを決定する
         if self.next_action is not None:
@@ -36,7 +36,7 @@ class SarsaAgent(QAgent):
             next_q = 0
             self.next_action = None
         else:
-            next_actions = self.env.get_action_space()
+            next_actions = self.env.get_current_action_space()
             next_action = self._select_action_with_epsilon_greedy()
             next_q = self.q_func[(next_state, next_action)]
             self.next_action = next_action

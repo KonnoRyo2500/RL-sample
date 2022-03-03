@@ -8,8 +8,12 @@ class Cartpole(EnvironmentBase):
     def __init__(self, config):
         super().__init__(config)
 
-    # 環境の行動空間を取得
-    def get_action_space(self):
+    # 環境全体における行動空間を取得
+    def get_whole_action_space(self):
+        pass
+
+    # 現状態における行動空間を取得
+    def get_current_action_space(self):
         pass
 
     # 指定された行動を実行し、報酬を得る

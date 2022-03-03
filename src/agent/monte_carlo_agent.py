@@ -45,7 +45,7 @@ class MonteCarloAgent(AgentBase):
         # ここでは方策オン型の初回訪問モンテカルロ法を採用する。
 
         s_space = self.env.get_state_space()
-        a_space = self.env.get_action_space()
+        a_space = self.env.get_whole_action_space()
 
         # Returnsの初期化
         returns = {}
@@ -107,7 +107,7 @@ class MonteCarloAgent(AgentBase):
 
         if v <= self.config['epsilon']:
             # ランダム選択
-            actions = self.env.get_action_space()
+            actions = self.env.get_current_action_space()
             idx = random.randint(0, len(actions) - 1)
             selected_action = actions[idx]
         else:
@@ -121,7 +121,7 @@ class MonteCarloAgent(AgentBase):
         # Q(s, a)が最大となるようなaは複数存在しうるので、そのような場合は
         # ランダムにaを選択することにする
         state = self.env.get_state()
-        actions = self.env.get_action_space()
+        actions = self.env.get_current_action_space()
         q_values = [self.q_func[(state, a)] for a in actions]
         greedy_indices = [i for i, q in enumerate(q_values) if q == max(q_values)]
         greedy_idx = greedy_indices[random.randint(0, len(greedy_indices) - 1)]
@@ -159,7 +159,7 @@ class MonteCarloAgent(AgentBase):
     def _make_initial_q_function(self):
         init_q_func = {}
         s_space = self.env.get_state_space()
-        a_space = self.env.get_action_space()
+        a_space = self.env.get_whole_action_space()
         for state, action in product(s_space, a_space):
             init_q_func[(state, action)] = 0
 
