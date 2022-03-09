@@ -9,6 +9,20 @@ environment:
         goal_pos: [[4, 4]] # ゴール座標。複数定義しても良い。
         goal_reward: [100] # ゴール時の報酬。goal_posの要素数と同じにすること。
 
+    cartpole:
+        position_part_num: 10 # カート位置の分割数
+        cart_velocity_part_num: 5 # カートの速度の分割数
+        pole_angle_part_num: 10 # 棒の角度の分割数
+        pole_velocity_part_num: 5 # 棒の速度の分割数
+        cart_position_min: -2.4 # カートの位置の最小値(-2.4～2.4の範囲に収めること)
+        cart_position_max: 2.4 # カートの位置の最大値(-2.4～2.4の範囲に収めること)
+        cart_velocity_min: -3.0 # カートの速度の最小値
+        cart_velocity_max: 3.0 # カートの速度の最大値
+        pole_angle_min: -12.0 # 棒の角度(度)の最小値(-12.0～12.0の範囲に収めること)
+        pole_angle_max: 12.0 # 棒の角度(度)の最大値(-12.0～12.0の範囲に収めること)
+        pole_velocity_min: -2.0 # 棒の速度の最小値
+        pole_velocity_max: 2.0 # 棒の速度の最大値
+
 # エージェントのハイパーパラメータ
 agent:
     q_learning:
