@@ -2,11 +2,18 @@
 
 from copy import copy
 from itertools import product
+from enum import Enum, auto
 
 from openpyxl import load_workbook
 
-from common.const_val import *
 from environment.env_base import EnvironmentBase
+
+# 移動方向
+class Direction(Enum):
+    Up = auto() # 上
+    Down = auto() # 下
+    Left = auto() # 左
+    Right = auto() # 右
 
 # Grid World環境クラス
 class GridWorld(EnvironmentBase):
