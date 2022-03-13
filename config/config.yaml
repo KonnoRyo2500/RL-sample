@@ -8,33 +8,33 @@ environment:
         initial_pos: [0, 0] # 初期座標。
         goal_pos: [[4, 4]] # ゴール座標。複数定義しても良い。
         goal_reward: [100] # ゴール時の報酬。goal_posの要素数と同じにすること。
+        step_limit: 100 # プレイ時のステップ数上限。
 
     cartpole:
-        position_part_num: 10 # カート位置の分割数
-        cart_velocity_part_num: 5 # カートの速度の分割数
-        pole_angle_part_num: 10 # 棒の角度の分割数
-        pole_velocity_part_num: 5 # 棒の速度の分割数
-        cart_position_min: -2.4 # カートの位置の最小値(-2.4～2.4の範囲に収めること)
-        cart_position_max: 2.4 # カートの位置の最大値(-2.4～2.4の範囲に収めること)
-        cart_velocity_min: -3.0 # カートの速度の最小値
-        cart_velocity_max: 3.0 # カートの速度の最大値
-        pole_angle_min: -12.0 # 棒の角度(度)の最小値(-12.0～12.0の範囲に収めること)
-        pole_angle_max: 12.0 # 棒の角度(度)の最大値(-12.0～12.0の範囲に収めること)
-        pole_velocity_min: -2.0 # 棒の速度の最小値
-        pole_velocity_max: 2.0 # 棒の速度の最大値
+        position_part_num: 10 # カート位置の分割数。
+        cart_velocity_part_num: 5 # カートの速度の分割数。
+        pole_angle_part_num: 10 # 棒の角度の分割数。
+        pole_velocity_part_num: 5 # 棒の速度の分割数。
+        cart_position_min: -2.4 # カートの位置の最小値(-2.4～2.4の範囲に収めること)。
+        cart_position_max: 2.4 # カートの位置の最大値(-2.4～2.4の範囲に収めること)。
+        cart_velocity_min: -3.0 # カートの速度の最小値。
+        cart_velocity_max: 3.0 # カートの速度の最大値。
+        pole_angle_min: -12.0 # 棒の角度(度)の最小値(-12.0～12.0の範囲に収めること)。
+        pole_angle_max: 12.0 # 棒の角度(度)の最大値(-12.0～12.0の範囲に収めること)。
+        pole_velocity_min: -2.0 # 棒の速度の最小値。
+        pole_velocity_max: 2.0 # 棒の速度の最大値。
+        step_limit: 500 # プレイ時のステップ数上限。
 
 # エージェントのハイパーパラメータ
 agent:
     q_learning:
         num_episode: 10000 # 学習に用いるエピソード数。
-        step_limit: 100 # プレイ時のステップ数上限。
         epsilon: 0.1 # ε-greedy法でランダムに行動を選択する確率。
         gamma: 0.8 # 割引率。
         alpha: 0.5 # 学習率。
 
     sarsa:
         num_episode: 10000 # 学習に用いるエピソード数。
-        step_limit: 100 # プレイ時のステップ数上限。
         epsilon: 0.1 # ε-greedy法でランダムに行動を選択する確率。
         gamma: 0.8 # 割引率。
         alpha: 0.5 # 学習率。
@@ -43,6 +43,4 @@ agent:
         gamma: 0.8 # 割引率。
         epsilon: 0.1 # ε-greedy法でランダムに行動を選択する確率。
         num_playout: 10000 # 学習に用いるプレイアウト数。
-        play_step_limit: 500 # プレイ時のステップ数上限。
-        playout_step_limit: 500 # 各プレイアウトを打ち切るステップ数の上限。
 

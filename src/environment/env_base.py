@@ -2,12 +2,15 @@
 
 from abc import ABCMeta, abstractmethod
 
+from common.const_val import EnvMode
+
 # 環境ベースクラス
 # このクラスのインスタンスは作成できない(抽象クラス)
 class EnvironmentBase(metaclass=ABCMeta):
     # コンストラクタ
     def __init__(self, config):
         self.config = config
+        self.mode = EnvMode.Train
 
     # 環境全体における行動空間を取得
     @abstractmethod
@@ -44,3 +47,7 @@ class EnvironmentBase(metaclass=ABCMeta):
     @abstractmethod
     def reset(self):
         pass
+
+    # 環境の動作モードを設定
+    def set_mode(self, mode):
+        self.mode = mode

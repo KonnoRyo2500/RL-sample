@@ -7,6 +7,7 @@ from enum import Enum, auto
 from openpyxl import load_workbook
 
 from environment.env_base import EnvironmentBase
+from common.const_val import EnvMode
 
 # 移動方向
 class Direction(Enum):
@@ -23,6 +24,7 @@ class GridWorld(EnvironmentBase):
         self.config = self._adjust_config(config)
         self.pos = copy(self.config['initial_pos'])
         self.wall = self._read_wall()
+        self.n_step = 0
 
     # 環境全体における行動空間を取得
     def get_whole_action_space(self):
@@ -34,6 +36,10 @@ class GridWorld(EnvironmentBase):
 
     # 指定された行動を実行し、報酬を得る
     def exec_action(self, action):
+        # プレイモードで指定ステップ数経過していたら何もしない(報酬はNone)
+        if (self.mode == EnvMode.Play) and (self.n_step >= self.config['step_limit']):
+            return None
+
         next_pos = self._get_next_pos(action)
         goal_pos = self.config['goal_pos']
 
@@ -51,6 +57,7 @@ class GridWorld(EnvironmentBase):
 
         # 移動の実施
         self.pos = copy(next_pos)
+        self.n_step += 1
 
         return reward
 
@@ -71,6 +78,7 @@ class GridWorld(EnvironmentBase):
     # 環境をリセットする
     def reset(self):
         self.pos = copy(self.config['initial_pos'])
+        self.n_step = 0
 
     # 設定値を一部調整する(型の変換などを行う)
     def _adjust_config(self, config):

@@ -4,7 +4,7 @@ from itertools import product
 import random
 from pprint import pprint
 
-from common.const_val import *
+from common.const_val import EnvMode
 from agent.agent_base import AgentBase
 
 # Q学習エージェントクラス
@@ -16,32 +16,35 @@ class QAgent(AgentBase):
 
     # 学習済みエージェントにエピソードをプレイさせる
     def play(self):
-        step_count = 0
-        step_limit = self.config['step_limit']
+        self.env.set_mode(EnvMode.Play)
+
         while not self.env.is_terminal_state():
             # 状態を取得(表示用)
             state = self.env.get_state()
 
             # greedy法で行動を選択
             action = self._select_action_with_greedy()
-            print(f'状態 {state} で行動 {action} を選択しました。')
 
             # 行動する
             reward = self.env.exec_action(action)
 
             # 無限ループ防止のため、一定回数移動してもゴールしなかったら
             # エピソードを途中で打ち切る
-            step_count += 1
-            if step_count > step_limit:
-                print(f'行動数が上限({step_limit}回)を超えたため、エピソードを終了します。')
+            if reward is None:
+                print('行動数が上限を超えたため、エピソードを終了します。')
                 break
+
+            print(f'状態 {state} で行動 {action} を選択しました。')
 
         if reward != 0:
             print(f'エピソードをプレイし、報酬 {reward} が得られました。')
+
         self.env.reset()
 
     # エージェントを学習させる
     def train(self):
+        self.env.set_mode(EnvMode.Train)
+
         for i in range(self.config['num_episode']):
             self._episode()
 

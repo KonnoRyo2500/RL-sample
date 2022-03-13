@@ -8,6 +8,7 @@ import math
 import gym
 
 from environment.env_base import EnvironmentBase
+from common.const_val import EnvMode
 
 # カートを押す方向
 class PushDirection(Enum):
@@ -37,6 +38,7 @@ class Cartpole(EnvironmentBase):
         self.env = gym.make('CartPole-v1')
         self.state = None
         self.is_terminated = False
+        self.n_step = 0
 
         self.state = self._quantize_state(self.env.reset())
 
@@ -51,6 +53,10 @@ class Cartpole(EnvironmentBase):
 
     # 指定された行動を実行し、報酬を得る
     def exec_action(self, action):
+        # プレイモードで指定ステップ数経過していたら何もしない(報酬はNone)
+        if (self.mode == EnvMode.Play) and (self.n_step >= self.config['step_limit']):
+            return None
+
         # 行動の実行
         next_state, reward, is_terminated, dbg_info = self.env.step(action.value)
 
@@ -63,6 +69,9 @@ class Cartpole(EnvironmentBase):
         # 次状態の適用
         self.state = next_state
         self.is_terminated = is_terminated
+
+        # ステップ数をインクリメント
+        self.n_step += 1
 
         return reward
 
@@ -93,6 +102,7 @@ class Cartpole(EnvironmentBase):
     def reset(self):
         self.env.reset()
         self.is_terminated = False
+        self.n_step = 0
 
     # 状態を量子化する
     # 状態が連続値なので、シンプルなアルゴリズムでもこの環境を利用できるようにする
