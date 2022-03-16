@@ -11,6 +11,7 @@ class EnvironmentBase(metaclass=ABCMeta):
     def __init__(self, config):
         self.config = config
         self.mode = EnvMode.Train
+        self.state = None
 
     # 環境全体における行動空間を取得
     @abstractmethod

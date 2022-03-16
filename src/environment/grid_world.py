@@ -22,7 +22,7 @@ class GridWorld(EnvironmentBase):
     def __init__(self, config):
         super().__init__(config)
         self.config = self._adjust_config(config)
-        self.pos = copy(self.config['initial_pos'])
+        self.state = copy(self.config['initial_pos'])
         self.wall = self._read_wall()
         self.n_step = 0
 
@@ -56,7 +56,7 @@ class GridWorld(EnvironmentBase):
             reward = 0
 
         # 移動の実施
-        self.pos = copy(next_pos)
+        self.state = copy(next_pos)
         self.n_step += 1
 
         return reward
@@ -69,15 +69,15 @@ class GridWorld(EnvironmentBase):
 
     # 現在の状態を取得
     def get_state(self):
-        return self.pos
+        return self.state
 
     # 現在の状態が終端状態かどうかを返す
     def is_terminal_state(self):
-        return self.pos in self.config['goal_pos']
+        return self.state in self.config['goal_pos']
 
     # 環境をリセットする
     def reset(self):
-        self.pos = copy(self.config['initial_pos'])
+        self.state = copy(self.config['initial_pos'])
         self.n_step = 0
 
     # 設定値を一部調整する(型の変換などを行う)
@@ -96,7 +96,7 @@ class GridWorld(EnvironmentBase):
             Direction.Right: (1, 0),
         }[direction]
 
-        next_pos = tuple([i + d for i, d in zip(self.pos, pos_diff)])
+        next_pos = tuple([i + d for i, d in zip(self.state, pos_diff)])
 
         return next_pos
 
@@ -105,7 +105,7 @@ class GridWorld(EnvironmentBase):
         next_pos = self._get_next_pos(direction)
 
         # すでにゴールにいる場合は移動しない
-        if self.pos in self.config['goal_pos']:
+        if self.state in self.config['goal_pos']:
             return False
         next_x, next_y = next_pos
 
@@ -116,7 +116,7 @@ class GridWorld(EnvironmentBase):
             return False
 
         # 壁の判定
-        wall = self.wall[self.pos]
+        wall = self.wall[self.state]
         hit_wall = ((direction == Direction.Up) and (wall[0])) or \
                    ((direction == Direction.Down) and (wall[1])) or \
                    ((direction == Direction.Left) and (wall[2])) or \

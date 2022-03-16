@@ -36,10 +36,8 @@ class Cartpole(EnvironmentBase):
         super().__init__(config)
 
         self.env = gym.make('CartPole-v1')
-        self.state = None
         self.is_terminated = False
         self.n_step = 0
-
         self.state = self._quantize_state(self.env.reset())
 
     # 環境全体における行動空間を取得
