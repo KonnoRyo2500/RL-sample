@@ -38,7 +38,7 @@ class Cartpole(EnvironmentBase):
         self.env = gym.make('CartPole-v1')
         self.is_terminated = False
         self.n_step = 0
-        self.state = self._quantize_state(self.env.reset())
+        self.state = self._convert_state(self.env.reset())
 
     # 環境全体における行動空間を取得
     def get_whole_action_space(self):
@@ -58,14 +58,8 @@ class Cartpole(EnvironmentBase):
         # 行動の実行
         next_state, reward, is_terminated, dbg_info = self.env.step(action.value)
 
-        # 次状態の決定
-        rad2degree = lambda rad_angle: rad_angle * (180.0 / math.pi)
-        next_state = list(next_state)
-        next_state[2] = rad2degree(next_state[2])
-        next_state = self._quantize_state(next_state)
-
         # 次状態の適用
-        self.state = next_state
+        self.state = self._convert_state(next_state)
         self.is_terminated = is_terminated
 
         # ステップ数をインクリメント
@@ -98,9 +92,20 @@ class Cartpole(EnvironmentBase):
 
     # 環境をリセットする
     def reset(self):
-        self.env.reset()
+        self.state = self._convert_state(self.env.reset())
         self.is_terminated = False
         self.n_step = 0
+
+    # 状態を内部で扱いやすい形に変換する
+    # list型に変換し、棒の角度をラジアンから度に変換する
+    # さらに、状態を量子化する
+    def _convert_state(self, original_state):
+        rad2degree = lambda rad_angle: rad_angle * (180.0 / math.pi)
+        state = list(original_state)
+        state[2] = rad2degree(state[2])
+        state = self._quantize_state(state)
+
+        return state
 
     # 状態を量子化する
     # 状態が連続値なので、シンプルなアルゴリズムでもこの環境を利用できるようにする
