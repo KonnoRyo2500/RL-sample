@@ -16,8 +16,6 @@ class QAgent(AgentBase):
 
     # 学習済みエージェントにエピソードをプレイさせる
     def play(self):
-        self.env.set_mode(EnvMode.Play)
-
         while not self.env.is_terminal_state():
             # 状態を取得(表示用)
             state = self.env.get_state()
@@ -27,13 +25,6 @@ class QAgent(AgentBase):
 
             # 行動する
             reward = self.env.exec_action(action)
-
-            # 無限ループ防止のため、一定回数移動してもゴールしなかったら
-            # エピソードを途中で打ち切る
-            if reward is None:
-                print('行動数が上限を超えたため、エピソードを終了します。')
-                break
-
             print(f'状態 {state} で行動 {action} を選択しました。')
 
         if reward != 0:
@@ -43,8 +34,6 @@ class QAgent(AgentBase):
 
     # エージェントを学習させる
     def train(self):
-        self.env.set_mode(EnvMode.Train)
-
         for i in range(self.config['num_episode']):
             self._episode()
 

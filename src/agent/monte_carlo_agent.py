@@ -16,8 +16,6 @@ class MonteCarloAgent(AgentBase):
 
     # 学習した価値関数を基にエピソードをプレイ
     def play(self):
-        self.env.set_mode(EnvMode.Play)
-
         while not self.env.is_terminal_state():
             # 状態を取得(表示用)
             state = self.env.get_state()
@@ -27,13 +25,6 @@ class MonteCarloAgent(AgentBase):
 
             # 行動する
             reward = self.env.exec_action(action)
-
-            # 無限ループ防止のため、一定回数移動してもゴールしなかったら
-            # エピソードを途中で打ち切る
-            if reward is None:
-                print('行動数が上限を超えたため、エピソードを終了します。')
-                break
-
             print(f'状態 {state} で行動 {action} を選択しました。')
 
         if reward != 0:
@@ -44,8 +35,6 @@ class MonteCarloAgent(AgentBase):
     def train(self):
         # モンテカルロ法には複数の亜種が存在するが、
         # ここでは方策オン型の初回訪問モンテカルロ法を採用する。
-        self.env.set_mode(EnvMode.Train)
-
         s_space = self.env.get_state_space()
         a_space = self.env.get_whole_action_space()
 

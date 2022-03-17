@@ -8,7 +8,6 @@ environment:
         initial_pos: [0, 0] # 初期座標。
         goal_pos: [[4, 4]] # ゴール座標。複数定義しても良い。
         goal_reward: [100] # ゴール時の報酬。goal_posの要素数と同じにすること。
-        step_limit: 100 # プレイ時のステップ数上限。
 
     cartpole:
         position_part_num: 10 # カート位置の分割数。
@@ -23,7 +22,6 @@ environment:
         pole_angle_max: 12.0 # 棒の角度(度)の最大値(-12.0～12.0の範囲に収めること)。
         pole_velocity_min: -2.0 # 棒の速度の最小値。
         pole_velocity_max: 2.0 # 棒の速度の最大値。
-        step_limit: 500 # プレイ時のステップ数上限。
 
 # エージェントのハイパーパラメータ
 agent:

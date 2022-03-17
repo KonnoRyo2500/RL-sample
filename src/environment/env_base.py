@@ -10,7 +10,6 @@ class EnvironmentBase(metaclass=ABCMeta):
     # コンストラクタ
     def __init__(self, config):
         self.config = config
-        self.mode = EnvMode.Train
         self.state = None
 
     # 環境全体における行動空間を取得
@@ -48,7 +47,3 @@ class EnvironmentBase(metaclass=ABCMeta):
     @abstractmethod
     def reset(self):
         pass
-
-    # 環境の動作モードを設定
-    def set_mode(self, mode):
-        self.mode = mode
