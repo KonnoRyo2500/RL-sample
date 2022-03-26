@@ -8,9 +8,10 @@ from environment.cartpole import Cartpole
 from agent.q_agent import QAgent
 from agent.sarsa_agent import SarsaAgent
 from agent.monte_carlo_agent import MonteCarloAgent
+from agent.reinforce_agent import ReinforceAgent
 
 # アルゴリズム名
-METHODS = ['q_learning', 'sarsa', 'monte_carlo']
+METHODS = ['q_learning', 'sarsa', 'monte_carlo', 'reinforce']
 # 環境名
 ENVS = ['grid_world', 'cartpole']
 
@@ -51,8 +52,8 @@ def create_env(name, config):
 
 # エージェントの作成
 def create_agent(method, env, config):
-    agent_classes = [QAgent, SarsaAgent, MonteCarloAgent]
-    agent_configs = [config['q_learning'], config['sarsa'], config['monte_carlo']]
+    agent_classes = [QAgent, SarsaAgent, MonteCarloAgent, ReinforceAgent]
+    agent_configs = [config['q_learning'], config['sarsa'], config['monte_carlo'], config['reinforce']]
 
     agent_class = dict(zip(METHODS, agent_classes))[method]
     agent_config = dict(zip(METHODS, agent_configs))[method]
