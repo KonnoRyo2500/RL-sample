@@ -2,8 +2,6 @@
 
 from abc import ABCMeta, abstractmethod
 
-from common.const_val import EnvMode
-
 # 環境ベースクラス
 # このクラスのインスタンスは作成できない(抽象クラス)
 class EnvironmentBase(metaclass=ABCMeta):

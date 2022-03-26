@@ -5,7 +5,6 @@ from pprint import pprint
 from itertools import product
 
 from agent.agent_base import AgentBase
-from common.const_val import EnvMode
 
 # モンテカルロ法エージェントクラス
 class MonteCarloAgent(AgentBase):

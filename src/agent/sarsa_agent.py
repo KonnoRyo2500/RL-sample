@@ -1,7 +1,6 @@
 # 強化学習勉強用サンプルプログラム SARSAエージェントクラス
 
 from agent.q_agent import QAgent
-from common.const_val import *
 
 # SARSAエージェントクラス
 # 行動価値関数の更新式以外はQAgentと同じなので、QAgentを継承して実装する

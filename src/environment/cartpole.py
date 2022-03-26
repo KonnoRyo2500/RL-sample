@@ -8,7 +8,6 @@ import math
 import gym
 
 from environment.env_base import EnvironmentBase
-from common.const_val import EnvMode
 
 # カートを押す方向
 class PushDirection(Enum):

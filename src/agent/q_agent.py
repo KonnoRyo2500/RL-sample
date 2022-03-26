@@ -4,7 +4,6 @@ from itertools import product
 import random
 from pprint import pprint
 
-from common.const_val import EnvMode
 from agent.agent_base import AgentBase
 
 # Q学習エージェントクラス

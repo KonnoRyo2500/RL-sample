@@ -7,7 +7,6 @@ from enum import Enum, auto
 from openpyxl import load_workbook
 
 from environment.env_base import EnvironmentBase
-from common.const_val import EnvMode
 
 # 移動方向
 class Direction(Enum):
