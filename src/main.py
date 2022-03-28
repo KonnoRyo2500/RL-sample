@@ -1,19 +1,25 @@
 # 強化学習勉強用サンプルプログラム メイン処理
 
 import argparse
+from enum import Enum
 
 from common.config import read_config
-from environment.grid_world import GridWorld
-from environment.cartpole import Cartpole
-from agent.q_agent import QAgent
-from agent.sarsa_agent import SarsaAgent
-from agent.monte_carlo_agent import MonteCarloAgent
-from agent.reinforce_agent import ReinforceAgent
+import environment
+import agent
 
 # アルゴリズム名
-METHODS = ['q_learning', 'sarsa', 'monte_carlo', 'reinforce']
+class Algorithm(Enum):
+    MonteCarlo = 'monte_carlo'
+    QLearning = 'q_learning'
+    Reinforce = 'reinforce'
+    Sarsa = 'sarsa'
+ALGORITHMS = [a.value for a in Algorithm]
+
 # 環境名
-ENVS = ['grid_world', 'cartpole']
+class Environment(Enum):
+    CartPole = 'cartpole'
+    GridWorld = 'grid_world'
+ENVS = [e.value for e in Environment]
 
 # コマンドライン引数の解析
 def parse_args():
@@ -26,41 +32,41 @@ def parse_args():
     parser.add_argument(
         '--env',
         type=str,
-        default='grid_world',
+        default=Environment.GridWorld.value,
         choices=ENVS,
         help='利用する環境。')
     parser.add_argument(
         '--method',
         type=str,
-        default='q_learning',
-        choices=METHODS,
+        default=Algorithm.QLearning.value,
+        choices=ALGORITHMS,
         help='利用する強化学習アルゴリズム。')
     args = parser.parse_args()
     return args
 
 # 環境の作成
 def create_env(name, config):
-    env_classes = [GridWorld, Cartpole]
-    env_configs = [config['grid_world'], config['cartpole']]
+    env_classes = [environment.Cartpole, environment.GridWorld]
+    env_configs = [config[e] for e in ENVS]
 
     env_class = dict(zip(ENVS, env_classes))[name]
     env_config = dict(zip(ENVS, env_configs))[name]
 
-    env = env_class(env_config)
+    env_instance = env_class(env_config)
 
-    return env
+    return env_instance
 
 # エージェントの作成
-def create_agent(method, env, config):
-    agent_classes = [QAgent, SarsaAgent, MonteCarloAgent, ReinforceAgent]
-    agent_configs = [config['q_learning'], config['sarsa'], config['monte_carlo'], config['reinforce']]
+def create_agent(name, env, config):
+    agent_classes = [agent.MonteCarloAgent, agent.QAgent, agent.ReinforceAgent, agent.SarsaAgent]
+    agent_configs = [config[a] for a in ALGORITHMS]
 
-    agent_class = dict(zip(METHODS, agent_classes))[method]
-    agent_config = dict(zip(METHODS, agent_configs))[method]
+    agent_class = dict(zip(ALGORITHMS, agent_classes))[name]
+    agent_config = dict(zip(ALGORITHMS, agent_configs))[name]
 
-    agent = agent_class(env, agent_config)
+    agent_instance = agent_class(env, agent_config)
 
-    return agent
+    return agent_instance
 
 # メイン処理
 def main():
