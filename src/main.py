@@ -46,11 +46,12 @@ def parse_args():
 
 # 環境の作成
 def create_env(name, config):
+    envs_idx = ENVS.index(name)
     env_classes = [environment.Cartpole, environment.GridWorld]
     env_configs = [config[e] for e in ENVS]
 
-    env_class = dict(zip(ENVS, env_classes))[name]
-    env_config = dict(zip(ENVS, env_configs))[name]
+    env_class = env_classes[envs_idx]
+    env_config = env_configs[envs_idx]
 
     env_instance = env_class(env_config)
 
@@ -58,11 +59,12 @@ def create_env(name, config):
 
 # エージェントの作成
 def create_agent(name, env, config):
+    algorithms_idx = ALGORITHMS.index(name)
     agent_classes = [agent.MonteCarloAgent, agent.QAgent, agent.ReinforceAgent, agent.SarsaAgent]
     agent_configs = [config[a] for a in ALGORITHMS]
 
-    agent_class = dict(zip(ALGORITHMS, agent_classes))[name]
-    agent_config = dict(zip(ALGORITHMS, agent_configs))[name]
+    agent_class = agent_classes[algorithms_idx]
+    agent_config = agent_configs[algorithms_idx]
 
     agent_instance = agent_class(env, agent_config)
 
@@ -75,14 +77,14 @@ def main():
     config = read_config(args.config)
 
     # 環境の作成
-    env = create_env(args.env, config['environment'])
+    env_instance = create_env(args.env, config['environment'])
 
     # エージェントの作成
-    agent = create_agent(args.method, env, config['agent'])
+    agent_instance = create_agent(args.method, env_instance, config['agent'])
 
     # 選択したエージェントで学習+プレイ
-    agent.train()
-    agent.play()
+    agent_instance.train()
+    agent_instance.play()
 
 if __name__ == '__main__':
     main()
