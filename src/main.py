@@ -9,16 +9,27 @@ import agent
 
 # アルゴリズム名
 class Algorithm(Enum):
-    MonteCarlo = 'monte_carlo'
-    QLearning = 'q_learning'
-    Sarsa = 'sarsa'
-ALGORITHMS = [a.value for a in Algorithm]
+    QLearning = 'q_learning' # Q学習
+    Sarsa = 'sarsa' # SARSA
+    MonteCarlo = 'monte_carlo' # モンテカルロ法
 
 # 環境名
 class Environment(Enum):
-    CartPole = 'cartpole'
-    GridWorld = 'grid_world'
-ENVS = [e.value for e in Environment]
+    GridWorld = 'grid_world' # Grid World
+    Cartpole = 'cartpole' # Cartpole
+
+# アルゴリズム名とエージェントクラスの対応
+ALGO2CLS = {
+    Algorithm.QLearning.value: agent.QAgent,
+    Algorithm.Sarsa.value: agent.SarsaAgent,
+    Algorithm.MonteCarlo.value: agent.MonteCarloAgent,
+}
+
+# 環境名と環境クラスの対応
+ENV2CLS = {
+    Environment.GridWorld.value: environment.GridWorld,
+    Environment.Cartpole.value: environment.Cartpole,
+}
 
 # コマンドライン引数の解析
 def parse_args():
@@ -32,42 +43,16 @@ def parse_args():
         '--env',
         type=str,
         default=Environment.GridWorld.value,
-        choices=ENVS,
+        choices=list(ENV2CLS.keys()),
         help='利用する環境。')
     parser.add_argument(
         '--method',
         type=str,
         default=Algorithm.QLearning.value,
-        choices=ALGORITHMS,
+        choices=list(ALGO2CLS.keys()),
         help='利用する強化学習アルゴリズム。')
     args = parser.parse_args()
     return args
-
-# 環境の作成
-def create_env(name, config):
-    envs_idx = ENVS.index(name)
-    env_classes = [environment.Cartpole, environment.GridWorld]
-    env_configs = [config[e] for e in ENVS]
-
-    env_class = env_classes[envs_idx]
-    env_config = env_configs[envs_idx]
-
-    env_instance = env_class(env_config)
-
-    return env_instance
-
-# エージェントの作成
-def create_agent(name, env, config):
-    algorithms_idx = ALGORITHMS.index(name)
-    agent_classes = [agent.MonteCarloAgent, agent.QAgent, agent.SarsaAgent]
-    agent_configs = [config[a] for a in ALGORITHMS]
-
-    agent_class = agent_classes[algorithms_idx]
-    agent_config = agent_configs[algorithms_idx]
-
-    agent_instance = agent_class(env, agent_config)
-
-    return agent_instance
 
 # メイン処理
 def main():
@@ -76,10 +61,10 @@ def main():
     config = read_config(args.config)
 
     # 環境の作成
-    env_instance = create_env(args.env, config['environment'])
+    env_instance = ENV2CLS[args.env](config['environment'][args.env])
 
     # エージェントの作成
-    agent_instance = create_agent(args.method, env_instance, config['agent'])
+    agent_instance = ALGO2CLS[args.method](env_instance, config['agent'][args.method])
 
     # 選択したエージェントで学習+プレイ
     agent_instance.train()
