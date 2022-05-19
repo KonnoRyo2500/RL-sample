@@ -11,7 +11,6 @@ import agent
 class Algorithm(Enum):
     MonteCarlo = 'monte_carlo'
     QLearning = 'q_learning'
-    Reinforce = 'reinforce'
     Sarsa = 'sarsa'
 ALGORITHMS = [a.value for a in Algorithm]
 
@@ -60,7 +59,7 @@ def create_env(name, config):
 # エージェントの作成
 def create_agent(name, env, config):
     algorithms_idx = ALGORITHMS.index(name)
-    agent_classes = [agent.MonteCarloAgent, agent.QAgent, agent.ReinforceAgent, agent.SarsaAgent]
+    agent_classes = [agent.MonteCarloAgent, agent.QAgent, agent.SarsaAgent]
     agent_configs = [config[a] for a in ALGORITHMS]
 
     agent_class = agent_classes[algorithms_idx]
