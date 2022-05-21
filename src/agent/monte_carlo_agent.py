@@ -1,10 +1,10 @@
 # 強化学習勉強用サンプルプログラム モンテカルロ法エージェントクラス
 
-import random
 from pprint import pprint
 from itertools import product
 
 from agent.agent_base import AgentBase
+from agent.util.select_action import greedy, epsilon_greedy
 
 # モンテカルロ法エージェントクラス
 class MonteCarloAgent(AgentBase):
@@ -20,7 +20,8 @@ class MonteCarloAgent(AgentBase):
             state = self.env.get_state()
 
             # greedy法で行動を選択
-            action = self._select_action_with_greedy()
+            action_space = self.env.get_current_action_space()
+            action = greedy(action_space, self.q_func, state)
 
             # 行動する
             reward = self.env.exec_action(action)
@@ -71,7 +72,8 @@ class MonteCarloAgent(AgentBase):
             state = self.env.get_state()
 
             # ε-greedy法により、行動aを選択する
-            action = self._select_action_with_epsilon_greedy()
+            action_space = self.env.get_current_action_space()
+            action = epsilon_greedy(action_space, self.q_func, state, self.config['epsilon'])
 
             # 行動aを行い、報酬rを得る
             reward = self.env.exec_action(action)
@@ -86,32 +88,6 @@ class MonteCarloAgent(AgentBase):
         self.env.reset()
 
         return exp_history
-
-    # ε-greedy法で行動を選択する
-    def _select_action_with_epsilon_greedy(self):
-        v = random.uniform(0, 1)
-
-        if v <= self.config['epsilon']:
-            # ランダム選択
-            actions = self.env.get_current_action_space()
-            idx = random.randint(0, len(actions) - 1)
-            selected_action = actions[idx]
-        else:
-            # greedy法による選択
-            selected_action = self._select_action_with_greedy()
-
-        return selected_action
-
-    # greedy法で行動を選択する
-    def _select_action_with_greedy(self):
-        # Q(s, a)が最大となるようなaは複数存在しうるので、そのような場合は
-        # ランダムにaを選択することにする
-        state = self.env.get_state()
-        actions = self.env.get_current_action_space()
-        q_values = [self.q_func[(state, a)] for a in actions]
-        greedy_indices = [i for i, q in enumerate(q_values) if q == max(q_values)]
-        greedy_idx = greedy_indices[random.randint(0, len(greedy_indices) - 1)]
-        return actions[greedy_idx]
 
     # Returnsを更新する
     def _update_returns(self, exp_history, returns):

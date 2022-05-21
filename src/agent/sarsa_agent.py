@@ -2,6 +2,8 @@
 
 from agent.q_agent import QAgent
 
+from agent.util.select_action import epsilon_greedy
+
 # SARSAエージェントクラス
 # 行動価値関数の更新式以外はQAgentと同じなので、QAgentを継承して実装する
 class SarsaAgent(QAgent):
@@ -24,7 +26,7 @@ class SarsaAgent(QAgent):
         if self.next_action is not None:
             action = self.next_action
         else:
-            action = self._select_action_with_epsilon_greedy()
+            action = epsilon_greedy(actions, self.q_func, state, self.config['epsilon'])
 
         # 次状態s'と報酬rを得る
         reward = self.env.exec_action(action)
@@ -36,7 +38,7 @@ class SarsaAgent(QAgent):
             self.next_action = None
         else:
             next_actions = self.env.get_current_action_space()
-            next_action = self._select_action_with_epsilon_greedy()
+            next_action = epsilon_greedy(next_actions, self.q_func, next_state, self.config['epsilon'])
             next_q = self.q_func[(next_state, next_action)]
             self.next_action = next_action
 

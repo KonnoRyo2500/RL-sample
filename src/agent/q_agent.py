@@ -1,10 +1,10 @@
 # 強化学習勉強用サンプルプログラム Q学習エージェントクラス
 
 from itertools import product
-import random
 from pprint import pprint
 
 from agent.agent_base import AgentBase
+from agent.util.select_action import greedy, epsilon_greedy
 
 # Q学習エージェントクラス
 class QAgent(AgentBase):
@@ -20,7 +20,8 @@ class QAgent(AgentBase):
             state = self.env.get_state()
 
             # greedy法で行動を選択
-            action = self._select_action_with_greedy()
+            action_space = self.env.get_current_action_space()
+            action = greedy(action_space, self.q_func, state)
 
             # 行動する
             reward = self.env.exec_action(action)
@@ -56,7 +57,8 @@ class QAgent(AgentBase):
         state = self.env.get_state()
 
         # 行動aを決定する
-        action = self._select_action_with_epsilon_greedy()
+        action_space = self.env.get_current_action_space()
+        action = epsilon_greedy(action_space, self.q_func, state, self.config['epsilon'])
 
         # 次状態s'と報酬rを得る
         reward = self.env.exec_action(action)
@@ -83,27 +85,3 @@ class QAgent(AgentBase):
             init_q_func[(state, action)] = 0
 
         return init_q_func
-
-    # ε-greedy法で行動を選択する
-    def _select_action_with_epsilon_greedy(self):
-        v = random.uniform(0, 1)
-        actions = self.env.get_current_action_space()
-        if v <= self.config['epsilon']:
-            # ランダム選択
-            random_idx = random.randint(0, len(actions) - 1)
-            return actions[random_idx]
-        else:
-            # greedy法による選択
-            return self._select_action_with_greedy()
-
-    # greedy法で行動を選択する
-    def _select_action_with_greedy(self):
-        # Q(s, a)が最大となるようなaは複数存在しうるので、そのような場合は
-        # ランダムにaを選択することにする
-        state = self.env.get_state()
-        actions = self.env.get_current_action_space()
-        q_values = [self.q_func[(state, a)] for a in actions]
-        greedy_indices = [i for i, q in enumerate(q_values) if q == max(q_values)]
-        greedy_idx = greedy_indices[random.randint(0, len(greedy_indices) - 1)]
-        return actions[greedy_idx]
-
