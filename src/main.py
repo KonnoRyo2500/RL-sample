@@ -12,6 +12,7 @@ class Algorithm(Enum):
     QLearning = 'q_learning' # Q学習
     Sarsa = 'sarsa' # SARSA
     MonteCarlo = 'monte_carlo' # モンテカルロ法
+    DQN = 'dqn' # DQN
 
 # 環境名
 class Environment(Enum):
@@ -23,6 +24,7 @@ ALGO2CLS = {
     Algorithm.QLearning.value: agent.QAgent,
     Algorithm.Sarsa.value: agent.SarsaAgent,
     Algorithm.MonteCarlo.value: agent.MonteCarloAgent,
+    Algorithm.DQN.value: agent.DqnAgent,
 }
 
 # 環境名と環境クラスの対応
