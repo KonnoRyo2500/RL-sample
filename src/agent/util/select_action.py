@@ -5,9 +5,16 @@ import random
 # greedy法で行動を選択する
 # 行動選択の基準として行動価値関数Q(s, a)を用いる
 def greedy(action_space, q_func, state):
+    if type(q_func) is dict:
+        # Q(s, a)が表形式の場合
+        q_values = [q_func[(state, a)] for a in action_space]
+    else:
+        # Q(s, a)が表形式でない場合
+        # この場合、NNなどにより各行動aに対するQ(s, a)の値が事前に与えられているものとする
+        q_values = q_func
+
     # Q(s, a)が最大となるようなaは複数存在しうるので、そのような場合は
     # ランダムにaを選択することにする
-    q_values = [q_func[(state, a)] for a in action_space]
     greedy_indices = [i for i, q in enumerate(q_values) if q == max(q_values)]
     greedy_idx = greedy_indices[random.randint(0, len(greedy_indices) - 1)]
     return action_space[greedy_idx]
