@@ -61,6 +61,7 @@ src/main.pyを、コマンドラインから実行します。実行時のオプ
 |      q_learning      |        Q学習         |
 |        sarsa         |        SARSA         |
 |     monte_carlo      |    モンテカルロ法    |
+|        dqn           |        DQN          |
 
 
 
@@ -123,7 +124,6 @@ Grid World環境で使用する盤面(グリッド)を定義するExcelファイ
   - 方策勾配法
   - etc.
 - 深層強化学習アルゴリズムの実装
-  - DQN
   - A3C
   - etc.
 - 環境の拡充
@@ -133,4 +133,3 @@ Grid World環境で使用する盤面(グリッド)を定義するExcelファイ
     - オフライン環境上でプレイできる家庭用ゲームやPCゲーム
     - etc.
   - etc.
-
