@@ -1,6 +1,6 @@
 # 強化学習勉強用サンプルプログラム SARSAエージェントクラス
 
-from agent.q_agent import QAgent
+from agent.q_learning.q_agent import QAgent
 
 from agent.util.select_action import epsilon_greedy
 

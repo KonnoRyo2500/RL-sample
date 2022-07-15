@@ -6,9 +6,9 @@ import torch
 import torch.optim as optim
 
 from agent.agent_base import AgentBase
-from agent.network.dqn_network import DqnNetwork
-from agent.network.experience_buffer import ExperienceBuffer
-from agent.network.huber_td_loss import HuberTDLoss
+from agent.dqn.dqn_network import DqnNetwork
+from agent.dqn.experience_buffer import ExperienceBuffer
+from agent.dqn.huber_td_loss import HuberTDLoss
 from agent.util.select_action import epsilon_greedy
 
 # DQNエージェントクラス
