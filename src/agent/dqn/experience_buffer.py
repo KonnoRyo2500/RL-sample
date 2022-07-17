@@ -1,16 +1,18 @@
 # 強化学習勉強用サンプルプログラム 経験バッファクラス
 
+from collections import deque
 import random
 
 # 経験バッファクラス
 class ExperienceBuffer:
     # コンストラクタ
-    def __init__(self, batch_size):
+    def __init__(self, batch_size, capacity):
         self.batch_size = batch_size
-        self.exp_buffer = []
+        self.exp_buffer = deque(maxlen=capacity)
 
     # 経験バッファに経験を追加する
     def append(self, exp):
+        # 最大サイズを超過した場合は、一番古い経験がバッファから削除される
         self.exp_buffer.append(exp)
 
     # 経験バッファから経験をミニバッチとして取り出す
@@ -31,7 +33,3 @@ class ExperienceBuffer:
         }
 
         return exp_batch
-
-    # 経験バッファをクリアする
-    def clear(self):
-        self.exp_buffer = []

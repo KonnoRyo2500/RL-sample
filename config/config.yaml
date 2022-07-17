@@ -49,3 +49,4 @@ agent:
         alpha: 0.01 # 学習率。
         batch_size: 8 # Q Networkの学習時にサンプリングする経験の個数。
         target_update_period: 8 # Target Networkを更新する頻度。
+        expbuf_capacity: 1000 # 経験バッファの最大サイズ。

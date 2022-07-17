@@ -25,7 +25,7 @@ class DqnAgent(AgentBase):
         self.target_network = DqnNetwork(in_size=in_size, out_size=out_size)
 
         # 経験バッファ
-        self.exp_buffer = ExperienceBuffer(self.config['batch_size'])
+        self.exp_buffer = ExperienceBuffer(self.config['batch_size'], self.config['expbuf_capacity'])
 
         # オプティマイザ
         self.optimizer = optim.Adam(self.q_network.parameters(), lr=self.config['alpha'])
@@ -59,9 +59,8 @@ class DqnAgent(AgentBase):
 
             step_count += 1
 
-        # 環境と経験バッファをリセットする
+        # 環境をリセットする
         self.env.reset()
-        self.exp_buffer.clear()
 
     # 1ステップ実行
     def _step(self):
