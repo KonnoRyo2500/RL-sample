@@ -114,7 +114,8 @@ class DqnAgent(AgentBase):
         self.optimizer.zero_grad()
 
         # Q Networkから行動価値関数を取得
-        q_func = self.q_network(torch.tensor(exp_batch['states']).float())
+        states_tensor = torch.tensor(exp_batch['states']).float()
+        q_func = self.q_network(states_tensor)
 
         # Target Networkからも行動価値関数を取得(これを教師データとする)
         # TD誤差を求めるため、Target Networkには次の状態s'を入力する
@@ -122,10 +123,10 @@ class DqnAgent(AgentBase):
         target_q_func = self.target_network(next_states_tensor)
 
         # 経験から得られた各行動を、全行動空間中のインデックスに変換する
-        # Tensorに変換した際に縦ベクトルにするため、リストのリストにする
+        # torch.gatherに入力するため、縦ベクトルにする
         whole_action_space = self.env.get_whole_action_space()
-        action_indices = [[whole_action_space.index(a)] for a in exp_batch['actions']]
-        action_indices = torch.tensor(action_indices)
+        action_indices = [whole_action_space.index(a) for a in exp_batch['actions']]
+        action_indices = torch.tensor(action_indices).unsqueeze(1)
 
         # 各種行動価値関数と経験に記録された行動からTD誤差の計算に必要な行動価値を抽出する
         q_values = q_func.gather(dim=1, index=action_indices).squeeze()
