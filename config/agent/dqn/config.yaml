@@ -1,0 +1,7 @@
+num_episode: 10000 # 学習に用いるエピソード数。
+epsilon: 0.1 # ε-greedy法でランダムに行動を選択する確率。
+gamma: 0.8 # 割引率。
+alpha: 0.01 # 学習率。
+batch_size: 8 # Q Networkの学習時にサンプリングする経験の個数。
+target_update_period: 8 # Target Networkを更新する頻度。
+expbuf_capacity: 1000 # 経験バッファの最大サイズ。

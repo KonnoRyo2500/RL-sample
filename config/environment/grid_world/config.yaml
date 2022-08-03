@@ -1,0 +1,7 @@
+grid_file: C:\Users\enc91\Desktop\hobby\AI\RL\sample\Grid.xlsx # 盤面を定義するファイル。
+# マスの座標は(x座標, y座標)で表し、左上のマスが(0, 0)。
+width: 5 # 盤面の幅。
+height: 5 # 盤面の高さ。
+initial_pos: [0, 0] # 初期座標。
+goal_pos: [[4, 4]] # ゴール座標。複数定義しても良い。
+goal_reward: [100] # ゴール時の報酬。goal_posの要素数と同じにすること。
