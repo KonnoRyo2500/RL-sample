@@ -38,14 +38,9 @@ class Cartpole(EnvironmentBase):
         self.is_terminated = False
         self.state = self._convert_state(self.env.reset())
 
-    # 環境全体における行動空間を取得
-    def get_whole_action_space(self):
+    # 環境の行動空間を取得
+    def get_action_space(self):
         return [dir for dir in PushDirection]
-
-    # 現状態における行動空間を取得
-    def get_current_action_space(self):
-        # この環境では、行動空間は状態に依らない
-        return self.get_whole_action_space()
 
     # 指定された行動を実行し、報酬を得る
     def exec_action(self, action):

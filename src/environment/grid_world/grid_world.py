@@ -24,13 +24,9 @@ class GridWorld(EnvironmentBase):
         self.state = copy(self.config['initial_pos'])
         self.wall = self._read_wall()
 
-    # 環境全体における行動空間を取得
-    def get_whole_action_space(self):
+    # 環境の行動空間を取得
+    def get_action_space(self):
         return [dir for dir in Direction]
-
-    # 現状態における行動空間を取得
-    def get_current_action_space(self):
-        return [dir for dir in Direction if self._can_move(dir)]
 
     # 指定された行動を実行し、報酬を得る
     def exec_action(self, action):
@@ -40,7 +36,7 @@ class GridWorld(EnvironmentBase):
         # 報酬の確定
         if not self._can_move(action):
             # 「行動できない」=「行動しても何も起こらない」とみなす
-            return 0 # TODO: 定数化するかどうか、報酬は0で良いか検討
+            return 0
         elif next_pos in goal_pos:
             # ゴール時
             i = goal_pos.index(next_pos)

@@ -20,7 +20,7 @@ class QAgent(AgentBase):
             state = self.env.get_state()
 
             # greedy法で行動を選択
-            action_space = self.env.get_current_action_space()
+            action_space = self.env.get_action_space()
             action = greedy(action_space, self.q_func, state)
 
             # 行動する
@@ -57,7 +57,7 @@ class QAgent(AgentBase):
         state = self.env.get_state()
 
         # 行動aを決定する
-        action_space = self.env.get_current_action_space()
+        action_space = self.env.get_action_space()
         action = epsilon_greedy(action_space, self.q_func, state, self.config['epsilon'])
 
         # 次状態s'と報酬rを得る
@@ -68,7 +68,7 @@ class QAgent(AgentBase):
         if self.env.is_terminal_state():
             next_max_q = 0
         else:
-            next_actions = self.env.get_current_action_space()
+            next_actions = self.env.get_action_space()
             next_max_q = max([self.q_func[(next_state, a)] for a in next_actions])
 
         # Q(s, a)はそのまま記述すると表記が長いため、短い名前の変数に入れておく
@@ -81,7 +81,7 @@ class QAgent(AgentBase):
     # 行動価値関数を初期化して返す
     def _make_initial_q_function(self):
         init_q_func = {}
-        for state, action in product(self.env.get_state_space(), self.env.get_whole_action_space()):
+        for state, action in product(self.env.get_state_space(), self.env.get_action_space()):
             init_q_func[(state, action)] = 0
 
         return init_q_func

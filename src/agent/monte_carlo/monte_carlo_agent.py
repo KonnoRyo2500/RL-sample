@@ -20,7 +20,7 @@ class MonteCarloAgent(AgentBase):
             state = self.env.get_state()
 
             # greedy法で行動を選択
-            action_space = self.env.get_current_action_space()
+            action_space = self.env.get_action_space()
             action = greedy(action_space, self.q_func, state)
 
             # 行動する
@@ -36,7 +36,7 @@ class MonteCarloAgent(AgentBase):
         # モンテカルロ法には複数の亜種が存在するが、
         # ここでは方策オン型の初回訪問モンテカルロ法を採用する。
         s_space = self.env.get_state_space()
-        a_space = self.env.get_whole_action_space()
+        a_space = self.env.get_action_space()
 
         # Returnsの初期化
         returns = {}
@@ -72,7 +72,7 @@ class MonteCarloAgent(AgentBase):
             state = self.env.get_state()
 
             # ε-greedy法により、行動aを選択する
-            action_space = self.env.get_current_action_space()
+            action_space = self.env.get_action_space()
             action = epsilon_greedy(action_space, self.q_func, state, self.config['epsilon'])
 
             # 行動aを行い、報酬rを得る
@@ -121,7 +121,7 @@ class MonteCarloAgent(AgentBase):
     def _make_initial_q_function(self):
         init_q_func = {}
         s_space = self.env.get_state_space()
-        a_space = self.env.get_whole_action_space()
+        a_space = self.env.get_action_space()
         for state, action in product(s_space, a_space):
             init_q_func[(state, action)] = 0
 

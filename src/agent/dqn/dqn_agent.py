@@ -18,7 +18,7 @@ class DqnAgent(AgentBase):
         super().__init__(env, config)
 
         in_size = len(self.env.get_state())
-        out_size = len(self.env.get_whole_action_space())
+        out_size = len(self.env.get_action_space())
 
         # 行動価値関数出力用ネットワーク
         self.q_network = DqnNetwork(in_size=in_size, out_size=out_size)
@@ -72,12 +72,8 @@ class DqnAgent(AgentBase):
         state_tensor = torch.tensor(state, dtype=torch.float32)
         q_func = self.target_network(state_tensor)
 
-        # 現在の行動空間で選択できない行動に対応する行動価値をQ(s, a)から除外する
-        whole_action_space = self.env.get_whole_action_space()
-        action_space = self.env.get_current_action_space()
-        q_func = [q_func[i].item() for i, a in enumerate(whole_action_space) if a in action_space]
-
         # Q(s, a)をもとに、ε-greedy法で行動aを決定する
+        action_space = self.env.get_action_space()
         action = epsilon_greedy(action_space, q_func, state, self.config['epsilon'])
 
         # 環境上で行動aを実行し、次状態s'と報酬rを得る
@@ -124,8 +120,8 @@ class DqnAgent(AgentBase):
 
         # 経験から得られた各行動を、全行動空間中のインデックスに変換する
         # torch.gatherに入力するため、縦ベクトルにする
-        whole_action_space = self.env.get_whole_action_space()
-        action_indices = [whole_action_space.index(a) for a in exp_batch['actions']]
+        action_space = self.env.get_action_space()
+        action_indices = [action_space.index(a) for a in exp_batch['actions']]
         action_indices = torch.tensor(action_indices).unsqueeze(1)
 
         # 各種行動価値関数と経験に記録された行動からTD誤差の計算に必要な行動価値を抽出する

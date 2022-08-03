@@ -10,14 +10,9 @@ class EnvironmentBase(metaclass=ABCMeta):
         self.config = config
         self.state = None
 
-    # 環境全体における行動空間を取得
+    # 環境の行動空間を取得
     @abstractmethod
-    def get_whole_action_space(self):
-        pass
-
-    # 現状態における行動空間を取得
-    @abstractmethod
-    def get_current_action_space(self):
+    def get_action_space(self):
         pass
 
     # 指定された行動を実行し、報酬を得る
