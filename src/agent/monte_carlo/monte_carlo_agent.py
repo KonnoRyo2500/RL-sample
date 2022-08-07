@@ -4,7 +4,8 @@ from pprint import pprint
 from itertools import product
 
 from agent.agent_base import AgentBase
-from agent.util.select_action import greedy, epsilon_greedy
+from agent.util.action_selector.greedy import Greedy
+from agent.util.action_selector.epsilon_greedy import EpsilonGreedy
 
 # モンテカルロ法エージェントクラス
 class MonteCarloAgent(AgentBase):
@@ -13,6 +14,11 @@ class MonteCarloAgent(AgentBase):
         super().__init__(env, config)
         self.q_func = self._make_initial_q_function()
 
+        # 行動選択インスタンス
+        action_space = self.env.get_action_space()
+        self.greedy = Greedy(action_space) # greedy
+        self.epsilon_greedy = EpsilonGreedy(action_space, self.config['epsilon']) # ε-greedy
+
     # 学習した価値関数を基にエピソードをプレイ
     def play(self):
         while not self.env.is_terminal_state():
@@ -20,8 +26,8 @@ class MonteCarloAgent(AgentBase):
             state = self.env.get_state()
 
             # greedy法で行動を選択
-            action_space = self.env.get_action_space()
-            action = greedy(action_space, self.q_func, state)
+            q_values = [self.q_func[(state, a)] for a in self.env.get_action_space()]
+            action = self.greedy.select_action(q_values)
 
             # 行動する
             reward = self.env.exec_action(action)
@@ -72,8 +78,8 @@ class MonteCarloAgent(AgentBase):
             state = self.env.get_state()
 
             # ε-greedy法により、行動aを選択する
-            action_space = self.env.get_action_space()
-            action = epsilon_greedy(action_space, self.q_func, state, self.config['epsilon'])
+            q_values = [self.q_func[(state, a)] for a in self.env.get_action_space()]
+            action = self.epsilon_greedy.select_action(q_values)
 
             # 行動aを行い、報酬rを得る
             reward = self.env.exec_action(action)

@@ -9,7 +9,9 @@ from agent.agent_base import AgentBase
 from agent.dqn.dqn_network import DqnNetwork
 from agent.dqn.experience_buffer import ExperienceBuffer
 from agent.dqn.huber_td_loss import HuberTDLoss
-from agent.util.select_action import epsilon_greedy
+
+from agent.util.action_selector.greedy import Greedy
+from agent.util.action_selector.epsilon_greedy import EpsilonGreedy
 
 # DQNエージェントクラス
 class DqnAgent(AgentBase):
@@ -17,8 +19,9 @@ class DqnAgent(AgentBase):
     def __init__(self, env, config):
         super().__init__(env, config)
 
+        action_space = self.env.get_action_space()
         in_size = len(self.env.get_state())
-        out_size = len(self.env.get_action_space())
+        out_size = len(action_space)
 
         # 行動価値関数出力用ネットワーク
         self.q_network = DqnNetwork(in_size=in_size, out_size=out_size)
@@ -32,6 +35,10 @@ class DqnAgent(AgentBase):
 
         # 誤差関数
         self.criterion = HuberTDLoss()
+
+        # 行動選択インスタンス
+        self.greedy = Greedy(action_space) # greedy
+        self.epsilon_greedy = EpsilonGreedy(action_space, self.config['epsilon']) # ε-greedy
 
     # 学習済みエージェントにエピソードをプレイさせる
     def play(self):
@@ -68,13 +75,13 @@ class DqnAgent(AgentBase):
         state = self.env.get_state()
 
         # Target Networkにsを入力し、sに対応する
-        # 行動価値関数Q(s, a)を取得する
+        # 行動価値Q(s, a)を取得する
         state_tensor = torch.tensor(state, dtype=torch.float32)
-        q_func = self.target_network(state_tensor)
+        q_values = self.target_network(state_tensor)
 
         # Q(s, a)をもとに、ε-greedy法で行動aを決定する
         action_space = self.env.get_action_space()
-        action = epsilon_greedy(action_space, q_func, state, self.config['epsilon'])
+        action = self.epsilon_greedy.select_action(q_values)
 
         # 環境上で行動aを実行し、次状態s'と報酬rを得る
         reward = self.env.exec_action(action)
