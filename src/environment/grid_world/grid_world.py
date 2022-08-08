@@ -28,6 +28,10 @@ class GridWorld(EnvironmentBase):
     def get_action_space(self):
         return [dir for dir in Direction]
 
+    # 現在選択可能な行動を取得
+    def get_available_actions(self):
+        return [dir for dir in Direction if self._can_move(dir)]
+
     # 指定された行動を実行し、報酬を得る
     def exec_action(self, action):
         next_pos = self._get_next_pos(action)

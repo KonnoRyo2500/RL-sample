@@ -15,6 +15,11 @@ class EnvironmentBase(metaclass=ABCMeta):
     def get_action_space(self):
         pass
 
+    # 現在選択可能な行動を取得
+    @abstractmethod
+    def get_available_actions(self):
+        pass
+
     # 指定された行動を実行し、報酬を得る
     @abstractmethod
     def exec_action(self, action):

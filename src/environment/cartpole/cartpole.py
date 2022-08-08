@@ -42,6 +42,11 @@ class Cartpole(EnvironmentBase):
     def get_action_space(self):
         return [dir for dir in PushDirection]
 
+    # 現在選択可能な行動を取得
+    def get_available_actions(self):
+        # 常に台車はどちらの方向にも押せる
+        return self.get_action_space()
+
     # 指定された行動を実行し、報酬を得る
     def exec_action(self, action):
         # 行動の実行
