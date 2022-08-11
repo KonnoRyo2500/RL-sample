@@ -27,7 +27,8 @@ class QAgent(AgentBase):
 
             # greedy法で行動を選択
             q_values = [self.q_func[(state, a)] for a in self.env.get_action_space()]
-            action = self.greedy.select_action(q_values)
+            available_actions = self.env.get_available_actions()
+            action = self.greedy.select_action(available_actions, q_values)
 
             # 行動する
             reward = self.env.exec_action(action)
@@ -64,7 +65,8 @@ class QAgent(AgentBase):
 
         # 行動aを決定する
         q_values = [self.q_func[(state, a)] for a in self.env.get_action_space()]
-        action = self.epsilon_greedy.select_action(q_values)
+        available_actions = self.env.get_available_actions()
+        action = self.epsilon_greedy.select_action(available_actions, q_values)
 
         # 次状態s'と報酬rを得る
         reward = self.env.exec_action(action)

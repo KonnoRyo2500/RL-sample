@@ -11,7 +11,7 @@ class ActionSelectorBase(metaclass=ABCMeta):
     def __init__(self, action_space):
         self.action_space = action_space # 環境の行動空間
 
-    # 行動価値に基づき、行動を選択する
+    # 行動価値に基づき、選択可能な行動の中から行動を選択する
     @abstractmethod
-    def select_action(self, state, q_values):
+    def select_action(self, available_actions, q_values):
         pass

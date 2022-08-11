@@ -81,7 +81,8 @@ class DqnAgent(AgentBase):
 
         # Q(s, a)をもとに、ε-greedy法で行動aを決定する
         action_space = self.env.get_action_space()
-        action = self.epsilon_greedy.select_action(q_values)
+        available_actions = self.env.get_available_actions()
+        action = self.epsilon_greedy.select_action(available_actions, q_values)
 
         # 環境上で行動aを実行し、次状態s'と報酬rを得る
         reward = self.env.exec_action(action)

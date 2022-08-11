@@ -20,15 +20,15 @@ class EpsilonGreedy(ActionSelectorBase):
         self.epsilon_min = epsilon_min # εの最小値
         self.epsilon = epsilon_init # 現在のεの値
 
-    # 行動価値に基づき、行動を選択する
-    def select_action(self, q_values):
+    # 行動価値に基づき、選択可能な行動の中から行動を選択する
+    def select_action(self, available_actions, q_values):
         v = random.uniform(0, 1)
         if v <= self.epsilon:
             # ランダム選択(探索)
-            action = self.random.select_action()
+            action = self.random.select_action(available_actions)
         else:
             # greedy選択(利用)
-            action = self.greedy.select_action(q_values)
+            action = self.greedy.select_action(available_actions, q_values)
 
         return action
 
