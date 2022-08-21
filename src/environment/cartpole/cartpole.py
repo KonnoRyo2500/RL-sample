@@ -34,7 +34,7 @@ class Cartpole(EnvironmentBase):
     def __init__(self, config):
         super().__init__(config)
 
-        self.env = gym.make('CartPole-v1')
+        self.env = gym.make('CartPole-v1', new_step_api=True)
         self.is_terminated = False
         self.state = self._convert_state(self.env.reset())
         self.step_count = 0
@@ -51,7 +51,7 @@ class Cartpole(EnvironmentBase):
     # 指定された行動を実行し、報酬を得る
     def exec_action(self, action):
         # 行動の実行
-        next_state, reward, is_terminated, dbg_info = self.env.step(action.value)
+        next_state, reward, is_terminated, is_trancated, dbg_info = self.env.step(action.value)
 
         # 行動回数をインクリメント
         self.step_count += 1
@@ -106,11 +106,13 @@ class Cartpole(EnvironmentBase):
     # list型に変換し、棒の角度をラジアンから度に変換する
     # さらに、状態を量子化する
     def _convert_state(self, original_state):
+        # 取り扱いやすくするため、状態はndarrayではなくリストにしておく
+        state = list(original_state)
+
         if self.config['use_original_state']:
-            return original_state
+            return state
 
         rad2degree = lambda rad_angle: rad_angle * (180.0 / math.pi)
-        state = list(original_state)
         state[2] = rad2degree(state[2])
         state = self._quantize_state(state)
 
