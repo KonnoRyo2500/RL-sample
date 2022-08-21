@@ -1,3 +1,7 @@
+step_limit: 200 # 1エピソードあたりの最大ステップ数。
+
+use_original_state: false # OpenAI Gym環境から得られる状態をそのまま使うか?falseの場合、離散化などの加工を行う。
+
 position_part_num: 10 # カート位置の分割数。
 cart_velocity_part_num: 5 # カートの速度の分割数。
 pole_angle_part_num: 10 # 棒の角度の分割数。

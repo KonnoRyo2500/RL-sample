@@ -1,14 +1,15 @@
 # 強化学習勉強用サンプルプログラム DQNエージェントクラス
 
 from enum import Enum
+import copy
 
 import torch
 import torch.optim as optim
+import torch.nn as nn
 
 from agent.agent_base import AgentBase
 from agent.dqn.dqn_network import DqnNetwork
 from agent.dqn.experience_buffer import ExperienceBuffer
-from agent.dqn.huber_td_loss import HuberTDLoss
 
 from agent.util.action_selector.greedy import Greedy
 from agent.util.action_selector.epsilon_greedy import EpsilonGreedy
@@ -25,20 +26,33 @@ class DqnAgent(AgentBase):
 
         # 行動価値関数出力用ネットワーク
         self.q_network = DqnNetwork(in_size=in_size, out_size=out_size)
-        self.target_network = DqnNetwork(in_size=in_size, out_size=out_size)
+        self.target_network = copy.deepcopy(self.q_network)
 
         # 経験バッファ
-        self.exp_buffer = ExperienceBuffer(self.config['batch_size'], self.config['expbuf_capacity'])
+        self.exp_buffer = ExperienceBuffer(
+            self.config['batch_size'],
+            self.config['expbuf_capacity'])
 
         # オプティマイザ
-        self.optimizer = optim.Adam(self.q_network.parameters(), lr=self.config['alpha'])
+        self.optimizer = optim.RMSprop(
+            self.q_network.parameters(),
+            lr=self.config['alpha'],
+            alpha=self.config['rmsprop_alpha'],
+            eps=self.config['rmsprop_epsilon'])
+
+        # 行動選択アルゴリズム
+        self.greedy = Greedy(action_space) # greedy
+        self.epsilon_greedy = EpsilonGreedy(
+            action_space,
+            self.config['epsilon_init'],
+            self.config['epsilon_diff'],
+            self.config['epsilon_min']) # ε-greedy
 
         # 誤差関数
-        self.criterion = HuberTDLoss()
+        self.criterion = nn.MSELoss()
 
-        # 行動選択インスタンス
-        self.greedy = Greedy(action_space) # greedy
-        self.epsilon_greedy = EpsilonGreedy(action_space, self.config['epsilon']) # ε-greedy
+        # 総ステップ数
+        self.total_step_count = 0
 
     # 学習済みエージェントにエピソードをプレイさせる
     def play(self):
@@ -54,17 +68,20 @@ class DqnAgent(AgentBase):
     # エピソードの実行(学習用)
     def _episode(self):
         state = self.env.get_state()
-        step_count = 0
         while not self.env.is_terminal_state():
             self._step()
 
-            self._update_q_network()
-
-            # Target Networkの更新は一定ステップごとに行う
-            if step_count % self.config['target_update_period'] == 0:
+            # Q Network, Target Networkの更新は一定ステップごとに行う
+            if self.total_step_count % self.config['q_update_period'] == 0:
+                self._update_q_network()
+            if self.total_step_count % self.config['target_update_period'] == 0:
                 self._update_target_network()
 
-            step_count += 1
+            # εを減少させる
+            if self.total_step_count > self.config['epsilon_decrement_step']:
+                self.epsilon_greedy.decrement_epsilon()
+
+            self.total_step_count += 1
 
         # 環境をリセットする
         self.env.reset()
@@ -77,7 +94,7 @@ class DqnAgent(AgentBase):
         # Target Networkにsを入力し、sに対応する
         # 行動価値Q(s, a)を取得する
         state_tensor = torch.tensor(state, dtype=torch.float32)
-        q_values = self.target_network(state_tensor)
+        q_values = self.q_network(state_tensor)
 
         # Q(s, a)をもとに、ε-greedy法で行動aを決定する
         action_space = self.env.get_action_space()
@@ -99,7 +116,7 @@ class DqnAgent(AgentBase):
             'state': state,
             'action': action,
             'next_state': next_state,
-            'reward': reward
+            'reward': reward,
         }
         self.exp_buffer.append(experience)
 
@@ -114,37 +131,39 @@ class DqnAgent(AgentBase):
         if exp_batch is None:
             return
 
-        # Q Networkの勾配を初期化
-        self.optimizer.zero_grad()
-
-        # Q Networkから行動価値関数を取得
+        # Q NetworkからQ(s, a)を得る
         states_tensor = torch.tensor(exp_batch['states']).float()
         q_func = self.q_network(states_tensor)
 
-        # Target Networkからも行動価値関数を取得(これを教師データとする)
-        # TD誤差を求めるため、Target Networkには次の状態s'を入力する
+        # Target NetworkからはQ(s', a)を得る
         next_states_tensor = torch.tensor(exp_batch['next_states']).float()
         target_q_func = self.target_network(next_states_tensor)
 
-        # 経験から得られた各行動を、全行動空間中のインデックスに変換する
-        # torch.gatherに入力するため、縦ベクトルにする
-        action_space = self.env.get_action_space()
-        action_indices = [action_space.index(a) for a in exp_batch['actions']]
-        action_indices = torch.tensor(action_indices).unsqueeze(1)
+        # max(a)[Q(s', a)]を求める
+        max_q_func, _ = torch.max(target_q_func, 1)
 
-        # 各種行動価値関数と経験に記録された行動からTD誤差の計算に必要な行動価値を抽出する
-        q_values = q_func.gather(dim=1, index=action_indices).squeeze()
-        target_q_values = torch.max(target_q_func, dim=1).values
-
-        # TD誤差を求め、そのHuber誤差を算出する(これを損失とする)
+        # 報酬rを得る
         rewards_tensor = torch.tensor(exp_batch['rewards']).float()
-        loss = self.criterion(q_values, target_q_values, rewards_tensor, self.config['gamma'])
+
+        # 教師信号r + γmax(a)[Q(s', a)]を計算する
+        # なお、Q(s', a)が最大値をとらないaについてはQ(s, a)と同じとする
+        target = q_func.clone()
+        actions = exp_batch['actions']
+        for i in range(len(exp_batch)):
+            action_idx = self.env.get_action_space().index(actions[i])
+            target[i, action_idx] = rewards_tensor[i] + self.config['gamma'] * max_q_func[i]
+
+        # Q Networkの勾配を初期化
+        self.optimizer.zero_grad()
+
+        # 誤差を計算する
+        loss = self.criterion(q_func, target)
 
         # ミニバッチ学習により、Q Networkのパラメータを更新する
         loss.backward()
         self.optimizer.step()
 
-    # Q Networkのパラメータを利用し、Target Networkのパラメータを更新する
+    # Q NetworkのパラメータをTarget Networkのパラメータに反映する
     def _update_target_network(self):
         # Q Networkのパラメータをそのままコピーする(Hard Update)
-        self.target_network.load_state_dict(self.q_network.state_dict())
+        self.target_network = copy.deepcopy(self.q_network)

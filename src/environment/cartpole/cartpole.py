@@ -37,6 +37,7 @@ class Cartpole(EnvironmentBase):
         self.env = gym.make('CartPole-v1')
         self.is_terminated = False
         self.state = self._convert_state(self.env.reset())
+        self.step_count = 0
 
     # 環境の行動空間を取得
     def get_action_space(self):
@@ -52,9 +53,20 @@ class Cartpole(EnvironmentBase):
         # 行動の実行
         next_state, reward, is_terminated, dbg_info = self.env.step(action.value)
 
+        # 行動回数をインクリメント
+        self.step_count += 1
+
         # 次状態の適用
         self.state = self._convert_state(next_state)
         self.is_terminated = is_terminated
+
+        # 1エピソード中の行動回数が一定以上であれば打ち止め
+        if self.step_count >= self.config['step_limit']:
+            self.is_terminated = True
+
+        # 途中で棒が倒れてしまったら罰を与える
+        if (self.step_count < self.config['step_limit']) and (is_terminated):
+            reward = -1
 
         return reward
 
@@ -62,6 +74,9 @@ class Cartpole(EnvironmentBase):
     # 状態が多すぎて(もしくは無限に存在して)取得できない場合はNoneを返す
     # Note: 各状態の分割数を増やしすぎると、状態空間のサイズが大きくなるため注意!
     def get_state_space(self):
+        if self.config['use_original_state']:
+            return None
+
         # 状態の分割数の範囲を取得
         rng_pos = range(self.config['position_part_num'])
         rng_cart_v = range(self.config['cart_velocity_part_num'])
@@ -85,11 +100,15 @@ class Cartpole(EnvironmentBase):
     def reset(self):
         self.state = self._convert_state(self.env.reset())
         self.is_terminated = False
+        self.step_count = 0
 
     # 状態を内部で扱いやすい形に変換する
     # list型に変換し、棒の角度をラジアンから度に変換する
     # さらに、状態を量子化する
     def _convert_state(self, original_state):
+        if self.config['use_original_state']:
+            return original_state
+
         rad2degree = lambda rad_angle: rad_angle * (180.0 / math.pi)
         state = list(original_state)
         state[2] = rad2degree(state[2])

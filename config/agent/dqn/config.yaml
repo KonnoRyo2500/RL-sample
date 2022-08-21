@@ -1,7 +1,18 @@
-num_episode: 10000 # 学習に用いるエピソード数。
-epsilon: 0.1 # ε-greedy法でランダムに行動を選択する確率。
-gamma: 0.8 # 割引率。
-alpha: 0.01 # 学習率。
-batch_size: 8 # Q Networkの学習時にサンプリングする経験の個数。
-target_update_period: 8 # Target Networkを更新する頻度。
-expbuf_capacity: 1000 # 経験バッファの最大サイズ。
+num_episode: 3000 # 学習に用いるエピソード数。
+
+epsilon_init: 1.0 # ε-greedy法でランダムに行動を選択する確率。(初期値)
+epsilon_diff: 0.001 # ε-greedy法でランダムに行動を選択する確率。(公差)
+epsilon_min: 0.1 #ε-greedy法でランダムに行動を選択する確率。(最小値)
+epsilon_decrement_step: 200 # ε-greedy法でεを減らし始めるステップ数。
+
+gamma: 0.97 # 割引率。
+alpha: 0.00015 # 学習率。
+batch_size: 50 # Q Networkの学習時にサンプリングする経験の個数。
+q_update_period: 10 # Q Networkを更新するステップ数の間隔。
+target_update_period: 20 # Target Networkを更新するステップ数の間隔。
+
+expbuf_under_limit: 200 # 学習を始める経験バッファの下限サイズ。
+expbuf_capacity: 200 # 経験バッファの最大サイズ。
+
+rmsprop_alpha: 0.95 # RMSPropの定数α。
+rmsprop_epsilon: 0.01 # RMSPropの定数ε。
