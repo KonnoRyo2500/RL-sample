@@ -3,10 +3,12 @@
 from copy import copy
 from itertools import product
 from enum import Enum, auto
+import os.path as op
 
 from openpyxl import load_workbook
 
 from environment.env_base import EnvironmentBase
+from common.dirs import ENV_CONFIG_DIR
 
 # 移動方向
 class Direction(Enum):
@@ -120,7 +122,8 @@ class GridWorld(EnvironmentBase):
 
     # 盤面を記述したExcelシートから、壁の情報を読み込む
     def _read_wall(self):
-        book = load_workbook(self.config['grid_file'])
+        path = op.join(ENV_CONFIG_DIR('grid_world'), self.config['grid_file'])
+        book = load_workbook(path)
         # シート名が変更されていても読み込めるようにしておく。
         sheet = book._sheets[0]
         wall = {}

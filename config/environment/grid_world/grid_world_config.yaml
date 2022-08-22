@@ -1,7 +1,9 @@
 # Grid World環境 設定ファイル
 # ファイル名は変更しないこと!
 
-grid_file: C:\Users\enc91\Desktop\hobby\AI\RL\sample\Grid.xlsx # 盤面を定義するファイル。
+grid_file: Grid.xlsx # 盤面を定義するExcelファイル。
+                     # ファイルは、本設定ファイルと同じディレクトリに配置すること。
+
 # マスの座標は(x座標, y座標)で表し、左上のマスが(0, 0)。
 width: 5 # 盤面の幅。
 height: 5 # 盤面の高さ。
