@@ -4,7 +4,8 @@ import argparse
 from enum import Enum
 import os.path as op
 
-from common.config import read_config
+import yaml
+
 import environment
 import agent
 
@@ -34,9 +35,6 @@ ENV2CLS = {
     Environment.Cartpole.value: environment.Cartpole,
 }
 
-# 設定ファイル名
-CONFIG_NAME = 'config.yaml'
-
 # コマンドライン引数の解析
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -55,18 +53,35 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+# 設定ファイル(YAML)を読み込む
+# 設定ファイルのパスは"<dir>\<prefix>_config.yaml"
+def load_config(dir, prefix):
+    # 設定ファイルパスの組み立て
+    SUFFIX = "_config"
+    EXT = ".yaml"
+    name = prefix + SUFFIX + EXT
+    path = op.join(dir, name)
+
+    if not op.exists(path):
+        raise FileNotFoundError(f'設定ファイル {path} が存在しません。')
+
+    with open(path, 'r', encoding='utf-8') as f:
+        config = yaml.safe_load(f)
+
+    return config
+
 # メイン処理
 def main():
     # コマンドライン引数の取得
     args = parse_args()
 
-    # 設定ファイルの読み込み
+    # 設定ファイル読み込み
     config_root = op.join(op.dirname(__file__), '..', 'config') # リポジトリルート直下、"config"フォルダ
-    env_config_path = op.join(config_root, 'environment', args.env, CONFIG_NAME)
-    agent_config_path = op.join(config_root, 'agent', args.method, CONFIG_NAME)
+    env_config_dir = op.join(config_root, 'environment', args.env)
+    agent_config_dir = op.join(config_root, 'agent', args.method)
 
-    env_config = read_config(env_config_path)
-    agent_config = read_config(agent_config_path)
+    env_config = load_config(env_config_dir, args.env)
+    agent_config = load_config(agent_config_dir, args.method)
 
     # 環境の作成
     env_instance = ENV2CLS[args.env](env_config)
