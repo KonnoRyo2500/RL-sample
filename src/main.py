@@ -8,6 +8,7 @@ import yaml
 
 import environment
 import agent
+from common.dirs import AGENT_CONFIG_DIR, ENV_CONFIG_DIR
 
 # アルゴリズム名
 class Algorithm(Enum):
@@ -76,12 +77,8 @@ def main():
     args = parse_args()
 
     # 設定ファイル読み込み
-    config_root = op.join(op.dirname(__file__), '..', 'config') # リポジトリルート直下、"config"フォルダ
-    env_config_dir = op.join(config_root, 'environment', args.env)
-    agent_config_dir = op.join(config_root, 'agent', args.method)
-
-    env_config = load_config(env_config_dir, args.env)
-    agent_config = load_config(agent_config_dir, args.method)
+    env_config = load_config(ENV_CONFIG_DIR(args.env), args.env)
+    agent_config = load_config(AGENT_CONFIG_DIR(args.method), args.method)
 
     # 環境の作成
     env_instance = ENV2CLS[args.env](env_config)
