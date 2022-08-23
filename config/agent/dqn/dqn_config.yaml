@@ -19,3 +19,5 @@ expbuf_capacity: 200 # 経験バッファの最大サイズ。
 
 rmsprop_alpha: 0.95 # RMSPropの定数α。
 rmsprop_epsilon: 0.01 # RMSPropの定数ε。
+
+nn_structure_file_fc: dqn_nn_structure_fc.yaml # 全結合型NNの構造定義ファイル名。

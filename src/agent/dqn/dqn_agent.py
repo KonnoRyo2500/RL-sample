@@ -25,7 +25,7 @@ class DqnAgent(AgentBase):
         out_size = len(action_space)
 
         # 行動価値関数出力用ネットワーク
-        self.q_network = DqnNetwork(in_size=in_size, out_size=out_size)
+        self.q_network = DqnNetwork(in_size, out_size, config)
         self.target_network = copy.deepcopy(self.q_network)
 
         # 経験バッファ
