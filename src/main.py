@@ -21,6 +21,7 @@ class Algorithm(Enum):
 class Environment(Enum):
     GridWorld = 'grid_world' # Grid World
     Cartpole = 'cartpole' # Cartpole
+    Othello = 'othello' # オセロ
 
 # アルゴリズム名とエージェントクラスの対応
 ALGO2CLS = {
@@ -34,6 +35,7 @@ ALGO2CLS = {
 ENV2CLS = {
     Environment.GridWorld.value: environment.GridWorld,
     Environment.Cartpole.value: environment.Cartpole,
+    Environment.Othello.value: environment.Othello,
 }
 
 # コマンドライン引数の解析
