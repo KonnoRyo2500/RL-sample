@@ -1,10 +1,17 @@
 # 強化学習勉強用サンプルプログラム オセロ環境
 
 from environment.env_base import EnvironmentBase
+from enum import Enum, auto
+
 
 # オセロ環境
 # 盤面は、一般的な8x8の盤面とする
 class Othello(EnvironmentBase):
+    # プレイヤーの手番
+    class Player(Enum):
+        White = auto()
+        Black = auto()
+
     # コンストラクタ
     def __init__(self, config):
         super().__init__(config)
