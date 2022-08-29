@@ -1,7 +1,9 @@
 # 強化学習勉強用サンプルプログラム オセロ環境
 
-from environment.env_base import EnvironmentBase
 from enum import Enum, auto
+
+from environment.env_base import EnvironmentBase
+from environment.othello.board.simple_othello_board import SimpleOthelloBoard
 
 
 # オセロ環境
@@ -9,12 +11,14 @@ from enum import Enum, auto
 class Othello(EnvironmentBase):
     # プレイヤーの手番
     class Player(Enum):
-        White = auto()
-        Black = auto()
+        White = auto()  # 白の手番
+        Black = auto()  # 黒の手番
 
     # コンストラクタ
     def __init__(self, config):
         super().__init__(config)
+
+        self.board = self._create_board(config['board_implementation'])
 
     # 環境の行動空間を取得
     def get_action_space(self):
@@ -46,3 +50,12 @@ class Othello(EnvironmentBase):
     # 環境をリセットする
     def reset(self):
         pass
+
+    # 盤面を作成する
+    def _create_board(self, implementation):
+        board_class = {
+            'simple': SimpleOthelloBoard
+        }[implementation]
+        board_instance = board_class()
+
+        return board_instance

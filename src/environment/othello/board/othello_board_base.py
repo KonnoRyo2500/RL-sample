@@ -7,8 +7,15 @@ from abc import ABCMeta, abstractmethod
 class OthelloBoardBase(metaclass=ABCMeta):
     # コンストラクタ
     def __init__(self):
+        # 盤面の実体
         self.grid = None
 
+        # 定数
+        self.BOARD_WIDTH = 8  # 盤面の幅
+        self.BOARD_HEIGHT = 8  # 盤面の高さ
+        # 石については実装方法によりデータの持ち方が異なるため、定義はサブクラス側で行う
+
+        # 盤面の初期化
         self.reset()
 
     # 石を置く

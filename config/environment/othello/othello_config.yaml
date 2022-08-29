@@ -1,2 +1,4 @@
 # オセロ環境 設定ファイル
 # ファイル名は変更しないこと!
+
+board_implementation: simple # ボードの実装方法。現時点では'simple'のみ。

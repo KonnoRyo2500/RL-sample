@@ -2,6 +2,7 @@
 
 from abc import ABCMeta, abstractmethod
 
+
 # 環境ベースクラス
 # このクラスのインスタンスは作成できない(抽象クラス)
 class EnvironmentBase(metaclass=ABCMeta):
