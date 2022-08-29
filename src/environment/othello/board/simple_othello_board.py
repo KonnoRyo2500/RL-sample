@@ -23,7 +23,7 @@ class SimpleOthelloBoard(OthelloBoardBase):
         pass
 
     # 現在の手番で石を置けるマスを探し、座標のリストで取得する
-    def find_available_board(self):
+    def search_available_grid(self):
         pass
 
     # 盤面の状態を8x8の2次元リストとして取得する
