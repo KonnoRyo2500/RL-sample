@@ -1,6 +1,5 @@
 # 強化学習勉強用サンプルプログラム DQNエージェントクラス
 
-from enum import Enum
 import copy
 
 import torch
@@ -14,14 +13,15 @@ from agent.dqn.experience_buffer import ExperienceBuffer
 from agent.util.action_selector.greedy import Greedy
 from agent.util.action_selector.epsilon_greedy import EpsilonGreedy
 
+
 # DQNエージェントクラス
 class DqnAgent(AgentBase):
     # コンストラクタ
     def __init__(self, env, config):
         super().__init__(env, config)
 
-        action_space = self.env.get_action_space()
-        in_size = len(self.env.get_state())
+        action_space = env.get_action_space()
+        in_size = len(env.get_state())
         out_size = len(action_space)
 
         # 行動価値関数出力用ネットワーク
@@ -41,12 +41,12 @@ class DqnAgent(AgentBase):
             eps=self.config['rmsprop_epsilon'])
 
         # 行動選択アルゴリズム
-        self.greedy = Greedy(action_space) # greedy
+        self.greedy = Greedy(action_space)  # greedy
         self.epsilon_greedy = EpsilonGreedy(
             action_space,
             self.config['epsilon_init'],
             self.config['epsilon_diff'],
-            self.config['epsilon_min']) # ε-greedy
+            self.config['epsilon_min'])  # ε-greedy
 
         # 誤差関数
         self.criterion = nn.MSELoss()
@@ -54,56 +54,45 @@ class DqnAgent(AgentBase):
         # 総ステップ数
         self.total_step_count = 0
 
-    # 学習済みエージェントにエピソードをプレイさせる
-    def play(self):
-        pass
+        # 直前の状態とそこで選択した行動
+        self.last_state_action = None
 
-    # エージェントを学習させる
-    def train(self):
-        for i in range(self.config['num_episode']):
-            self._episode()
+    # 環境の情報を参照し、次の行動を決定する
+    def decide_action(self, env):
+        state = env.get_state()
+        available_actions = env.get_available_actions()
+        q_values = self.q_network(torch.tensor(state).float())
 
-        self.env.reset()
+        if self.mode == DqnAgent.OperationMode.Train:
+            action = self.epsilon_greedy.select_action(available_actions, q_values)
+        else:
+            action = self.greedy.select_action(available_actions, q_values)
 
-    # エピソードの実行(学習用)
-    def _episode(self):
-        state = self.env.get_state()
-        while not self.env.is_terminal_state():
-            self._step()
+        # feedbackでTD誤差を計算するため、現状態と選択した行動を記録しておく
+        self.last_state_action = (state, action)
 
-            # Q Network, Target Networkの更新は一定ステップごとに行う
-            if self.total_step_count % self.config['q_update_period'] == 0:
-                self._update_q_network()
-            if self.total_step_count % self.config['target_update_period'] == 0:
-                self._update_target_network()
+        return action
 
-            # εを減少させる
-            if self.total_step_count > self.config['epsilon_decrement_step']:
-                self.epsilon_greedy.decrement_epsilon()
+    # 環境からの情報を自身にフィードバックする
+    def feedback(self, reward, env):
+        self._step(reward, env)
 
-            self.total_step_count += 1
+        # Q Network, Target Networkの更新は一定ステップごとに行う
+        if self.total_step_count % self.config['q_update_period'] == 0:
+            self._update_q_network(env)
+        if self.total_step_count % self.config['target_update_period'] == 0:
+            self._update_target_network()
 
-        # 環境をリセットする
-        self.env.reset()
+        # εを減少させる
+        if self.total_step_count > self.config['epsilon_decrement_step']:
+            self.epsilon_greedy.decrement_epsilon()
+
+        self.total_step_count += 1
 
     # 1ステップ実行
-    def _step(self):
-        # 現状態sを取得する
-        state = self.env.get_state()
-
-        # Target Networkにsを入力し、sに対応する
-        # 行動価値Q(s, a)を取得する
-        state_tensor = torch.tensor(state, dtype=torch.float32)
-        q_values = self.q_network(state_tensor)
-
-        # Q(s, a)をもとに、ε-greedy法で行動aを決定する
-        action_space = self.env.get_action_space()
-        available_actions = self.env.get_available_actions()
-        action = self.epsilon_greedy.select_action(available_actions, q_values)
-
-        # 環境上で行動aを実行し、次状態s'と報酬rを得る
-        reward = self.env.exec_action(action)
-        next_state = self.env.get_state()
+    def _step(self, reward, env):
+        # 次状態s'を得る
+        next_state = env.get_state()
 
         # Reward Clippingを実施し、rの値域を[-1,1]に制限する
         if reward > 1:
@@ -112,6 +101,7 @@ class DqnAgent(AgentBase):
             reward = -1
 
         # 経験e = (s, a, s', r)を作成し、経験バッファに追加する
+        state, action = self.last_state_action
         experience = {
             'state': state,
             'action': action,
@@ -123,7 +113,7 @@ class DqnAgent(AgentBase):
         # 各種ネットワークのパラメータ更新は別関数にて行う
 
     # Experience Replayにより、Q Networkのパラメータを更新する
-    def _update_q_network(self):
+    def _update_q_network(self, env):
         # 経験バッファから一定個数の経験(経験バッチ)を取り出す
         exp_batch = self.exp_buffer.sample()
 
@@ -150,7 +140,7 @@ class DqnAgent(AgentBase):
         target = q_func.clone()
         actions = exp_batch['actions']
         for i in range(len(exp_batch)):
-            action_idx = self.env.get_action_space().index(actions[i])
+            action_idx = env.get_action_space().index(actions[i])
             target[i, action_idx] = rewards_tensor[i] + self.config['gamma'] * max_q_func[i]
 
         # Q Networkの勾配を初期化
