@@ -1,9 +1,9 @@
-# 強化学習勉強用サンプルプログラム 1vs1対戦ゲームプレイ環境クラス
+# 強化学習勉強用サンプルプログラム 1vs1対戦ゲームフレームワーククラス
 
 from game.game_base import GameBase
 
 
-# 1vs1対戦ゲームプレイ環境クラス
+# 1vs1対戦ゲームフレームワーククラス
 class OneVsOneGame(GameBase):
     # コンストラクタ
     def __init__(self, env, agents, env_config, agent_configs):

@@ -1,9 +1,9 @@
-# 強化学習勉強用サンプルプログラム 一人用ゲームプレイ環境クラス
+# 強化学習勉強用サンプルプログラム 一人用ゲームフレームワーククラス
 
 from game.game_base import GameBase
 
 
-# 一人用ゲームプレイ環境クラス
+# 一人用ゲームフレームワーククラス
 class SinglePlayerGame(GameBase):
     # コンストラクタ
     def __init__(self, env, agents, env_config, agent_configs):

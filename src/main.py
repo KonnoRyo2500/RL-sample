@@ -44,7 +44,7 @@ ENV2CLS = {
     Environment.Othello.value: environment.Othello,
 }
 
-# 環境名とプレイ環境クラスの対応
+# 環境名とゲームフレームワーククラスの対応
 ENV2GAME = {
     Environment.GridWorld.value: game.SinglePlayerGame,
     Environment.Cartpole.value: game.SinglePlayerGame,
@@ -104,7 +104,7 @@ def main():
     # エージェントの作成
     agent_instances = [ALGO2CLS[name](env_instance, config) for name, config in zip(args.methods, agent_configs)]
 
-    # プレイ環境の作成
+    # ゲームフレームワークの作成
     game_instance = SinglePlayerGame(env_instance, agent_instances, env_config, agent_configs)
 
     # 指定された環境とエージェントで学習+プレイ
