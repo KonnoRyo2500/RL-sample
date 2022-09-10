@@ -10,10 +10,12 @@ import gym
 from environment.env_base import EnvironmentBase
 from common.const_val import Environment
 
+
 # カートを押す方向
 class PushDirection(Enum):
-    Left = 0 # 左
-    Right = 1 # 右
+    Left = 0  # 左
+    Right = 1  # 右
+
 
 # 各状態の最小値、最大値
 # カートの位置
@@ -27,7 +29,8 @@ POLE_ANGLE_MIN = -24.8
 POLE_ANGLE_MAX = 24.8
 # 棒の速度
 POLE_VELOCITY_MIN = float('-inf')
-CART_VELOCITY_MAX = float('inf')
+POLE_VELOCITY_MAX = float('inf')
+
 
 # Cartpole環境クラス
 class Cartpole(EnvironmentBase):
@@ -42,7 +45,7 @@ class Cartpole(EnvironmentBase):
 
     # 環境の行動空間を取得
     def get_action_space(self):
-        return [dir for dir in PushDirection]
+        return [dir_name for dir_name in PushDirection]
 
     # 現在選択可能な行動を取得
     def get_available_actions(self):
@@ -66,7 +69,7 @@ class Cartpole(EnvironmentBase):
             self.is_terminated = True
 
         # 途中で棒が倒れてしまったら罰を与える
-        if (self.step_count < self.config['step_limit']) and (is_terminated):
+        if (self.step_count < self.config['step_limit']) and is_terminated:
             reward = -1
 
         return reward
@@ -113,8 +116,8 @@ class Cartpole(EnvironmentBase):
         if self.config['use_original_state']:
             return state
 
-        rad2degree = lambda rad_angle: rad_angle * (180.0 / math.pi)
-        state[2] = rad2degree(state[2])
+        # 角度はラジアン -> 度に変換しておく
+        state[2] = state[2] * (180.0 / math.pi)
         state = self._quantize_state(state)
 
         return state
@@ -173,7 +176,7 @@ class Cartpole(EnvironmentBase):
         section_len = range_len / num_part
 
         # この式で計算することで、forループ+if文を使わずとも
-        # 区間のインデックスを求めることができる
+        # 区間のインデックスを求められる
         section_idx = int((val - minimum) // section_len)
 
         return section_idx
