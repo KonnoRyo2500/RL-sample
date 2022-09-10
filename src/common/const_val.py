@@ -22,3 +22,9 @@ class Environment(Enum):
     GridWorld = 'grid_world'  # Grid World
     Cartpole = 'cartpole'  # Cartpole
     Othello = 'othello'  # オセロ
+
+
+# ゲームフレームワーク名
+class Game(Enum):
+    OneVsOne = '1vs1'  # 1vs1対戦ゲーム
+    SinglePlayer = 'single_player'  # 一人用ゲーム

@@ -1,13 +1,14 @@
 # 強化学習勉強用サンプルプログラム 一人用ゲームフレームワーククラス
 
 from game.game_base import GameBase
+from common.const_val import Game
 
 
 # 一人用ゲームフレームワーククラス
 class SinglePlayerGame(GameBase):
     # コンストラクタ
     def __init__(self, env, agents):
-        super().__init__(env, agents)
+        super().__init__(env, agents, Game.SinglePlayer.value)
 
         if len(agents) > 1:
             print(f'警告: 複数のエージェントが指定されました。最初に指定されたエージェントのみ使用されます')
@@ -23,7 +24,7 @@ class SinglePlayerGame(GameBase):
     def train_agent(self):
         self.agent.switch_to_train_mode()
 
-        for i in range(5000):  # Note: 仮コード
+        for i in range(self.config['num_episode']):
             self._train_episode()
             self.env.reset()
 
