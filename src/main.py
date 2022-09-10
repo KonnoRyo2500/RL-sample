@@ -6,7 +6,6 @@ import environment
 import agent
 import game
 from common.const_val import Agent, Environment
-from game.single_player_game import SinglePlayerGame
 
 
 # アルゴリズム名とエージェントクラスの対応
@@ -66,7 +65,7 @@ def main():
     agent_instances = [ALGO2CLS[name](env_instance) for name in args.methods]
 
     # ゲームフレームワークの作成
-    game_instance = SinglePlayerGame(env_instance, agent_instances)
+    game_instance = ENV2GAME[args.env](env_instance, agent_instances)
 
     # 指定された環境とエージェントで学習+プレイ
     game_instance.train_agent()
