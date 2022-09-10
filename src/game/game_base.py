@@ -7,11 +7,9 @@ from abc import ABCMeta, abstractmethod
 # このクラスのインスタンスは作成できない(抽象クラス)
 class GameBase(metaclass=ABCMeta):
     # コンストラクタ
-    def __init__(self, env, agents, env_config, agent_configs):
+    def __init__(self, env, agents):
         self.env = env
-        self.env_config = env_config
         self.agents = agents
-        self.agent_configs = agent_configs
 
     # エージェントを学習させる
     @abstractmethod

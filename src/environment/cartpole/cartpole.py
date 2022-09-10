@@ -8,6 +8,7 @@ import math
 import gym
 
 from environment.env_base import EnvironmentBase
+from common.const_val import Environment
 
 # カートを押す方向
 class PushDirection(Enum):
@@ -31,8 +32,8 @@ CART_VELOCITY_MAX = float('inf')
 # Cartpole環境クラス
 class Cartpole(EnvironmentBase):
     # コンストラクタ
-    def __init__(self, config):
-        super().__init__(config)
+    def __init__(self):
+        super().__init__(Environment.Cartpole.value)
 
         self.env = gym.make('CartPole-v1', new_step_api=True)
         self.is_terminated = False

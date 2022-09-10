@@ -6,8 +6,8 @@ from game.game_base import GameBase
 # 一人用ゲームフレームワーククラス
 class SinglePlayerGame(GameBase):
     # コンストラクタ
-    def __init__(self, env, agents, env_config, agent_configs):
-        super().__init__(env, agents, env_config, agent_configs)
+    def __init__(self, env, agents):
+        super().__init__(env, agents)
 
         if len(agents) > 1:
             print(f'警告: 複数のエージェントが指定されました。最初に指定されたエージェントのみ使用されます')
@@ -15,7 +15,6 @@ class SinglePlayerGame(GameBase):
         # 一人用ゲームのエージェントに対して複数形の名前を用いるのは不自然なので、単数形にしておく
         # 型もリストではなくエージェントのクラスそのものとする
         self.agent = self.agents[0]
-        self.agent_config = self.agent_configs[0]
 
         # 環境を初期化
         self.env.reset()
@@ -24,7 +23,7 @@ class SinglePlayerGame(GameBase):
     def train_agent(self):
         self.agent.switch_to_train_mode()
 
-        for i in range(self.agent_config['num_episode']):
+        for i in range(5000):  # Note: 仮コード
             self._train_episode()
             self.env.reset()
 

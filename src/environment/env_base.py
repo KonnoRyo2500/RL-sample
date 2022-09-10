@@ -2,13 +2,16 @@
 
 from abc import ABCMeta, abstractmethod
 
+from common.dirs import ENV_CONFIG_DIR
+from common.config import load_config
+
 
 # 環境ベースクラス
 # このクラスのインスタンスは作成できない(抽象クラス)
 class EnvironmentBase(metaclass=ABCMeta):
     # コンストラクタ
-    def __init__(self, config):
-        self.config = config
+    def __init__(self, name):
+        self.config = self._load_config(name)
         self.state = None
 
     # 環境の行動空間を取得
@@ -46,3 +49,10 @@ class EnvironmentBase(metaclass=ABCMeta):
     @abstractmethod
     def reset(self):
         pass
+
+    # 設定ファイルを読み込む
+    def _load_config(self, name):
+        dir_name = ENV_CONFIG_DIR(name)
+        file_name = f'{name}_config.yaml'
+
+        return load_config(dir_name, file_name)

@@ -9,6 +9,7 @@ from openpyxl import load_workbook
 
 from environment.env_base import EnvironmentBase
 from common.dirs import ENV_CONFIG_DIR
+from common.const_val import Environment
 
 # 移動方向
 class Direction(Enum):
@@ -20,9 +21,9 @@ class Direction(Enum):
 # Grid World環境クラス
 class GridWorld(EnvironmentBase):
     # コンストラクタ
-    def __init__(self, config):
-        super().__init__(config)
-        self.config = self._adjust_config(config)
+    def __init__(self):
+        super().__init__(Environment.GridWorld.value)
+        self.config = self._adjust_config(self.config)
         self.state = copy(self.config['initial_pos'])
         self.wall = self._read_wall()
 

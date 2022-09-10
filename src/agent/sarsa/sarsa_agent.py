@@ -5,13 +5,14 @@ from itertools import product
 from agent.agent_base import AgentBase
 from agent.util.action_selector.greedy import Greedy
 from agent.util.action_selector.epsilon_greedy import EpsilonGreedy
+from common.const_val import Agent
 
 
 # SARSAエージェントクラス
 class SarsaAgent(AgentBase):
     # コンストラクタ
-    def __init__(self, env, config):
-        super().__init__(env, config)
+    def __init__(self, env):
+        super().__init__(env, Agent.Sarsa.value)
         action_space = env.get_action_space()
         state_space = env.get_state_space()
 

@@ -4,6 +4,7 @@ from enum import Enum, auto
 
 from environment.env_base import EnvironmentBase
 from environment.othello.board.simple_othello_board import SimpleOthelloBoard
+from common.const_val import Environment
 
 
 # オセロ環境
@@ -15,10 +16,10 @@ class Othello(EnvironmentBase):
         Black = auto()  # 黒の手番
 
     # コンストラクタ
-    def __init__(self, config):
-        super().__init__(config)
+    def __init__(self):
+        super().__init__(Environment.Othello.value)
 
-        self.board = self._create_board(config['board_implementation'])
+        self.board = self._create_board(self.config['board_implementation'])
 
     # 環境の行動空間を取得
     def get_action_space(self):

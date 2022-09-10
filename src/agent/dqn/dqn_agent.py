@@ -9,23 +9,23 @@ import torch.nn as nn
 from agent.agent_base import AgentBase
 from agent.dqn.dqn_network import DqnNetwork
 from agent.dqn.experience_buffer import ExperienceBuffer
-
 from agent.util.action_selector.greedy import Greedy
 from agent.util.action_selector.epsilon_greedy import EpsilonGreedy
+from common.const_val import Agent
 
 
 # DQNエージェントクラス
 class DqnAgent(AgentBase):
     # コンストラクタ
-    def __init__(self, env, config):
-        super().__init__(env, config)
+    def __init__(self, env):
+        super().__init__(env, Agent.Dqn.value)
 
         action_space = env.get_action_space()
         in_size = len(env.get_state())
         out_size = len(action_space)
 
         # 行動価値関数出力用ネットワーク
-        self.q_network = DqnNetwork(in_size, out_size, config)
+        self.q_network = DqnNetwork(in_size, out_size, self.config)
         self.target_network = copy.deepcopy(self.q_network)
 
         # 経験バッファ

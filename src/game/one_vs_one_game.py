@@ -6,8 +6,8 @@ from game.game_base import GameBase
 # 1vs1対戦ゲームフレームワーククラス
 class OneVsOneGame(GameBase):
     # コンストラクタ
-    def __init__(self, env, agents, env_config, agent_configs):
-        super().__init__(env, agents, env_config, agent_configs)
+    def __init__(self, env, agents):
+        super().__init__(env, agents)
 
     # エージェントを学習させる
     def train_agent(self):
