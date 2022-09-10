@@ -11,12 +11,14 @@ from environment.env_base import EnvironmentBase
 from common.dirs import ENV_CONFIG_DIR
 from common.const_val import Environment
 
+
 # 移動方向
 class Direction(Enum):
-    Up = auto() # 上
-    Down = auto() # 下
-    Left = auto() # 左
-    Right = auto() # 右
+    Up = auto()  # 上
+    Down = auto()  # 下
+    Left = auto()  # 左
+    Right = auto()  # 右
+
 
 # Grid World環境クラス
 class GridWorld(EnvironmentBase):
@@ -26,14 +28,15 @@ class GridWorld(EnvironmentBase):
         self.config = self._adjust_config(self.config)
         self.state = copy(self.config['initial_pos'])
         self.wall = self._read_wall()
+        self.step_count = 0
 
     # 環境の行動空間を取得
     def get_action_space(self):
-        return [dir for dir in Direction]
+        return [d for d in Direction]
 
     # 現在選択可能な行動を取得
     def get_available_actions(self):
-        return [dir for dir in Direction if self._can_move(dir)]
+        return [d for d in Direction if self._can_move(d)]
 
     # 指定された行動を実行し、報酬を得る
     def exec_action(self, action):
@@ -48,12 +51,16 @@ class GridWorld(EnvironmentBase):
             # ゴール時
             i = goal_pos.index(next_pos)
             reward = self.config['goal_reward'][i]
+        elif (self.step_count >= self.config['step_limit'] - 1) and (next_pos not in goal_pos):
+            # ステップ数上限に達してもゴールできなかったとき
+            reward = self.config['fail_reward']
         else:
             # 通常移動時
             reward = 0
 
         # 移動の実施
         self.state = copy(next_pos)
+        self.step_count += 1
 
         return reward
 
@@ -69,11 +76,14 @@ class GridWorld(EnvironmentBase):
 
     # 現在の状態が終端状態かどうかを返す
     def is_terminal_state(self):
-        return self.state in self.config['goal_pos']
+        is_goaled = (self.state in self.config['goal_pos'])
+        is_failed = (self.step_count >= self.config['step_limit']) and (not is_goaled)
+        return is_goaled or is_failed
 
     # 環境をリセットする
     def reset(self):
         self.state = copy(self.config['initial_pos'])
+        self.step_count = 0
 
     # 設定値を一部調整する(型の変換などを行う)
     def _adjust_config(self, config):
