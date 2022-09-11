@@ -30,7 +30,7 @@ class EnvTester(GameBase):
             raise RuntimeError("テスト種別には 'auto' もしくは 'manual' のいずれかを指定してください")
 
         executor_class = executor_classes[self.config['test_type']]
-        executor_instance = executor_class(self.config)
+        executor_instance = executor_class(self.config, self.env)
 
         # テスト実施
         executor_instance.exec_test()
