@@ -50,6 +50,11 @@ def parse_args():
         choices=method_names,
         nargs='+',
         help='利用する強化学習アルゴリズム。')
+    parser.add_argument(
+        '--test-env',
+        action='store_true',
+        help='環境テストモードを有効にする。エージェントの学習は行われません。'
+    )
     args = parser.parse_args()
     return args
 
@@ -65,7 +70,12 @@ def main():
     agent_instances = [ALGO2CLS[name](env_instance) for name in args.methods]
 
     # ゲームフレームワークの作成
-    game_instance = ENV2GAME[args.env](env_instance, agent_instances)
+    if args.test_env:
+        # 環境テスト
+        game_instance = game.EnvTester(env_instance, agent_instances)
+    else:
+        # 通常実行
+        game_instance = ENV2GAME[args.env](env_instance, agent_instances)
 
     # 指定された環境とエージェントで学習+プレイ
     game_instance.train_agent()

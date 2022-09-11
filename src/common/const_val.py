@@ -28,3 +28,4 @@ class Environment(Enum):
 class Game(Enum):
     OneVsOne = '1vs1'  # 1vs1対戦ゲーム
     SinglePlayer = 'single_player'  # 一人用ゲーム
+    EnvTester = 'env_tester'  # 環境テスト
