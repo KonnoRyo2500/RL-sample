@@ -1,6 +1,8 @@
 # 強化学習勉強用サンプルプログラム 環境テスト用フレームワーククラス
 
 from game.game_base import GameBase
+from game.env_test.auto_test_executor import AutoTestExecutor
+from game.env_test.manual_test_executor import ManualTestExecutor
 from common.const_val import Game
 
 
@@ -18,4 +20,17 @@ class EnvTester(GameBase):
     # 学習済みのエージェントでゲームをプレイする
     # 本フレームワークでは、この関数で環境のテストを行うものとする
     def play(self):
-        pass
+        # テスト実施インスタンスの作成
+        executor_classes = {
+            'auto': AutoTestExecutor,  # 自動テスト
+            'manual': ManualTestExecutor,  # 手動テスト
+        }
+
+        if self.config['test_type'] not in executor_classes.keys():
+            raise RuntimeError("テスト種別には 'auto' もしくは 'manual' のいずれかを指定してください")
+
+        executor_class = executor_classes[self.config['test_type']]
+        executor_instance = executor_class(self.config)
+
+        # テスト実施
+        executor_instance.exec_test()
