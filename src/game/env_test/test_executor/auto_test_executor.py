@@ -1,6 +1,6 @@
 # 強化学習勉強用サンプルプログラム 自動環境テストクラス
 
-from game.env_test.test_executor_base import TestExecutorBase
+from game.env_test.test_executor.test_executor_base import TestExecutorBase
 
 
 # 自動環境テストクラス
