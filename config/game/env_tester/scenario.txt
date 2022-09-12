@@ -1,0 +1,5 @@
+action 1
+print available-action
+action 2
+print state
+reset
