@@ -67,7 +67,7 @@ def main():
     # 環境の作成
     env_instance = ENV2CLS[args.env]()
     # エージェントの作成
-    agent_instances = [ALGO2CLS[name](env_instance) for name in args.methods]
+    agent_instances = None if args.test_env else [ALGO2CLS[name](env_instance) for name in args.methods]
 
     # ゲームフレームワークの作成
     if args.test_env:
