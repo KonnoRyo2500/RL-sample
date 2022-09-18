@@ -7,7 +7,7 @@ import math
 
 import gym
 
-from environment.env_base import EnvironmentBase
+from environment.base.env_base import EnvironmentBase
 from common.const_val import Environment
 
 

@@ -2,7 +2,7 @@
 
 from itertools import product
 
-from agent.agent_base import AgentBase
+from agent.base.agent_base import AgentBase
 from agent.util.action_selector.greedy import Greedy
 from agent.util.action_selector.epsilon_greedy import EpsilonGreedy
 from common.const_val import Agent

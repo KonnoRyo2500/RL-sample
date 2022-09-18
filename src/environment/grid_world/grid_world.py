@@ -7,7 +7,7 @@ import os.path as op
 
 from openpyxl import load_workbook
 
-from environment.env_base import EnvironmentBase
+from environment.base.env_base import EnvironmentBase
 from common.dirs import ENV_CONFIG_DIR
 from common.const_val import Environment
 

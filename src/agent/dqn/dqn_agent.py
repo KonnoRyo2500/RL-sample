@@ -6,7 +6,7 @@ import torch
 import torch.optim as optim
 import torch.nn as nn
 
-from agent.agent_base import AgentBase
+from agent.base.agent_base import AgentBase
 from agent.dqn.dqn_network import DqnNetwork
 from agent.dqn.experience_buffer import ExperienceBuffer
 from agent.util.action_selector.greedy import Greedy

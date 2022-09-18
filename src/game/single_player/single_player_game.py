@@ -1,6 +1,6 @@
 # 強化学習勉強用サンプルプログラム 一人用ゲームフレームワーククラス
 
-from game.game_base import GameBase
+from game.base.game_base import GameBase
 from common.const_val import Game
 
 

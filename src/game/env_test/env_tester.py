@@ -1,6 +1,6 @@
 # 強化学習勉強用サンプルプログラム 環境テスト用フレームワーククラス
 
-from game.game_base import GameBase
+from game.base.game_base import GameBase
 from game.env_test.test_executor.auto_test_executor import AutoTestExecutor
 from game.env_test.test_executor.manual_test_executor import ManualTestExecutor
 from common.const_val import Game
