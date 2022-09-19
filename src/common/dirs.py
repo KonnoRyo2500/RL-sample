@@ -3,7 +3,7 @@
 import os.path as op
 
 # リポジトリルートディレクトリ
-REPO_ROOT = op.join(op.dirname(__file__), '..', '..')
+REPO_ROOT = op.normpath(op.join(op.dirname(__file__), '..', '..'))
 
 # 設定ファイルディレクトリ
 CONFIG_DIR = op.join(REPO_ROOT, 'config')
