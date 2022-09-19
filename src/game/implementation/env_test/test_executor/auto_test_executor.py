@@ -4,8 +4,8 @@ import os.path as op
 
 from common.dirs import GAME_CONFIG_DIR
 from common.const_val import Game
-from game.env_test.test_executor.test_executor_base import TestExecutorBase
-from game.env_test.test_executor.command_executor import CommandExecutor
+from game.implementation.env_test.test_executor.test_executor_base import TestExecutorBase
+from game.implementation.env_test.test_executor.command_executor import CommandExecutor
 
 
 # 自動環境テストクラス

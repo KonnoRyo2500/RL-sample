@@ -7,8 +7,8 @@ import torch.optim as optim
 import torch.nn as nn
 
 from agent.base.agent_base import AgentBase
-from agent.dqn.dqn_network import DqnNetwork
-from agent.dqn.experience_buffer import ExperienceBuffer
+from agent.implementation.dqn.dqn_network import DqnNetwork
+from agent.implementation.dqn.experience_buffer import ExperienceBuffer
 from agent.util.action_selector.greedy import Greedy
 from agent.util.action_selector.epsilon_greedy import EpsilonGreedy
 from common.const_val import Agent

@@ -2,7 +2,7 @@
 
 from enum import Enum, auto
 
-from environment.othello.board.othello_board_base import OthelloBoardBase
+from environment.implementation.othello.board.othello_board_base import OthelloBoardBase
 
 
 # オセロ盤面クラス

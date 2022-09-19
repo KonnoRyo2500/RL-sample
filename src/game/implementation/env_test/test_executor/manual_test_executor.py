@@ -1,7 +1,7 @@
 # 強化学習勉強用サンプルプログラム 手動環境テストクラス
 
-from game.env_test.test_executor.test_executor_base import TestExecutorBase
-from game.env_test.test_executor.command_executor import CommandExecutor
+from game.implementation.env_test.test_executor.test_executor_base import TestExecutorBase
+from game.implementation.env_test.test_executor.command_executor import CommandExecutor
 
 
 # 手動環境テストクラス

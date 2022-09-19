@@ -3,7 +3,7 @@
 from enum import Enum, auto
 
 from environment.base.env_base import EnvironmentBase
-from environment.othello.board.simple_othello_board import SimpleOthelloBoard
+from environment.implementation.othello.board.simple_othello_board import SimpleOthelloBoard
 from common.const_val import Environment
 
 
