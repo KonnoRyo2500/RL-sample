@@ -28,7 +28,7 @@ ENV2CLS = {
 ENV2GAME = {
     Environment.GridWorld.value: game.SinglePlayerGame,
     Environment.Cartpole.value: game.SinglePlayerGame,
-    Environment.Othello.value: game.OneVsOneGame,
+    Environment.Othello.value: game.MultiPlayerGame,
 }
 
 

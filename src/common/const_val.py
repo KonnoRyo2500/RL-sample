@@ -26,6 +26,6 @@ class Environment(Enum):
 
 # ゲームフレームワーク名
 class Game(Enum):
-    OneVsOne = '1vs1'  # 1vs1対戦ゲーム
+    MultiPlayer = 'multi_player'  # 複数人プレイヤーゲーム
     SinglePlayer = 'single_player'  # 一人用ゲーム
     EnvTester = 'env_tester'  # 環境テスト
