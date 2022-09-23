@@ -7,7 +7,7 @@ import math
 
 import gym
 
-from environment.base.env_base import EnvironmentBase
+from environment.base.single_player_env_base import SinglePlayerEnvironmentBase
 from common.const_val import Environment
 
 
@@ -33,7 +33,7 @@ POLE_VELOCITY_MAX = float('inf')
 
 
 # Cartpole環境クラス
-class Cartpole(EnvironmentBase):
+class Cartpole(SinglePlayerEnvironmentBase):
     # コンストラクタ
     def __init__(self):
         super().__init__(Environment.Cartpole.value)

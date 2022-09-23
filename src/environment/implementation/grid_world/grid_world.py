@@ -7,7 +7,7 @@ import os.path as op
 
 from openpyxl import load_workbook
 
-from environment.base.env_base import EnvironmentBase
+from environment.base.single_player_env_base import SinglePlayerEnvironmentBase
 from common.dirs import ENV_CONFIG_DIR
 from common.const_val import Environment
 
@@ -21,7 +21,7 @@ class Direction(Enum):
 
 
 # Grid World環境クラス
-class GridWorld(EnvironmentBase):
+class GridWorld(SinglePlayerEnvironmentBase):
     # コンストラクタ
     def __init__(self):
         super().__init__(Environment.GridWorld.value)

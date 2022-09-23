@@ -2,18 +2,20 @@
 
 from enum import Enum, auto
 
-from environment.base.env_base import EnvironmentBase
+from environment.base.multi_player_env_base import MultiPlayerEnvironmentBase
 from environment.implementation.othello.board.simple_othello_board import SimpleOthelloBoard
 from common.const_val import Environment
 
 
+# プレイヤーの手番
+class Player(Enum):
+    White = auto()  # 白の手番
+    Black = auto()  # 黒の手番
+
+
 # オセロ環境
 # 盤面は、一般的な8x8の盤面とする
-class Othello(EnvironmentBase):
-    # プレイヤーの手番
-    class Player(Enum):
-        White = auto()  # 白の手番
-        Black = auto()  # 黒の手番
+class Othello(MultiPlayerEnvironmentBase):
 
     # コンストラクタ
     def __init__(self):
@@ -51,6 +53,14 @@ class Othello(EnvironmentBase):
     # 環境をリセットする
     def reset(self):
         pass
+
+    # 現手番のプレイヤーを変更する
+    # プレイヤーは0始まりの数字で渡され、本関数にて環境固有の表現に変換されてメンバ変数にセットされる
+    def change_player(self, player):
+        self.player = {
+            0: Player.White,
+            1: Player.Black,
+        }[player]
 
     # 盤面を作成する
     def _create_board(self, implementation):
