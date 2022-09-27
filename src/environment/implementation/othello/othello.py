@@ -1,16 +1,11 @@
 # 強化学習勉強用サンプルプログラム オセロ環境
 
-from enum import Enum, auto
+from itertools import product
 
 from environment.base.multi_player_env_base import MultiPlayerEnvironmentBase
 from environment.implementation.othello.board.simple_othello_board import SimpleOthelloBoard
+from environment.implementation.othello.const_val import *
 from common.const_val import Environment
-
-
-# プレイヤーの手番
-class Player(Enum):
-    White = auto()  # 白の手番
-    Black = auto()  # 黒の手番
 
 
 # オセロ環境
@@ -23,17 +18,21 @@ class Othello(MultiPlayerEnvironmentBase):
 
         self.board = self._create_board(self.config['board_implementation'])
 
+        # 初手プレイヤーの設定
+        self.player = Player.Light
+
     # 環境の行動空間を取得
     def get_action_space(self):
-        pass
+        return [(x, y) for x, y in product(range(GRID_WIDTH), range(GRID_HEIGHT))]
 
     # 現在選択可能な行動を取得
     def get_available_actions(self):
-        pass
+        return self.board.search_available_grid(self.player)
 
     # 指定された行動を実行し、報酬を得る
     def exec_action(self, action):
-        pass
+        self.board.put_disk(action, self.player)
+        return 0
 
     # 環境の状態空間を取得
     # 状態が多すぎて(もしくは無限に存在して)取得できない場合はNoneを返す
@@ -44,23 +43,32 @@ class Othello(MultiPlayerEnvironmentBase):
 
     # 現在の状態を取得
     def get_state(self):
-        return self.state
+        return self.board.get_grid()
 
     # 現在の状態が終端状態かどうかを返す
     def is_terminal_state(self):
-        pass
+        # 双方のプレイヤーの打てる手がなければ終了
+        available_grid_dark = self.board.search_available_grid(Player.Dark)
+        available_grid_light = self.board.search_available_grid(Player.Light)
+
+        return (len(available_grid_dark) == 0) and (len(available_grid_light) == 0)
 
     # 環境をリセットする
     def reset(self):
-        pass
+        self.board.reset()
 
-    # 現手番のプレイヤーを変更する
-    # プレイヤーは0始まりの数字で渡され、本関数にて環境固有の表現に変換されてメンバ変数にセットされる
-    def change_player(self, player):
-        self.player = {
-            0: Player.White,
-            1: Player.Black,
-        }[player]
+    # 次の手番のプレイヤーに交代する
+    def switch_to_next_player(self):
+        next_player = Player.Dark if self.player == Player.Light else Player.Light
+        self.player = next_player
+
+    # 現手番のプレイヤーを取得する
+    # プレイヤーは0始まりの数字で返される
+    def get_player(self):
+        return {
+            Player.Light: 0,
+            Player.Dark: 1,
+        }[self.player]
 
     # 盤面を作成する
     def _create_board(self, implementation):

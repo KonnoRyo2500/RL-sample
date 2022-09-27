@@ -16,6 +16,7 @@ class CommandExecutor:
             'print': self._exec_print,
             'action': self._exec_action,
             'reset': self._exec_reset,
+            'next-player': self._exec_next_player,
         }
 
         print(f'実行開始: {cmd}')
@@ -44,6 +45,7 @@ class CommandExecutor:
             'available-action': self.env.get_available_actions(),
             'action-space': self.env.get_action_space(),
             'is-terminal-state': self.env.is_terminal_state(),
+            'player': self.env.get_player()
         }
 
         # 引数チェック(表示対象名として有効かどうか)
@@ -90,3 +92,12 @@ class CommandExecutor:
             print("'reset' コマンドに引数は不要です。指定された引数は無視されます")
 
         self.env.reset()
+
+    # 'next-player'コマンドの実行
+    def _exec_next_player(self, args):
+        # 引数チェック(個数)
+        if len(args) > 0:
+            print("'next-player' コマンドに引数は不要です。指定された引数は無視されます")
+
+        # 環境に対して、プレイヤーの交代を指示する
+        self.env.switch_to_next_player()

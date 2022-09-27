@@ -14,8 +14,13 @@ class MultiPlayerEnvironmentBase(ABC, EnvironmentBase):
 
         self.player = None  # 現手番のプレイヤー
 
-    # 現手番のプレイヤーを変更する
-    # プレイヤーは0始まりの数字で渡され、本関数にて環境固有の表現に変換されてメンバ変数にセットされる
+    # 次の手番のプレイヤーに交代する
     @abstractmethod
-    def change_player(self, player):
+    def switch_to_next_player(self):
+        pass
+
+    # 現手番のプレイヤーを取得する
+    # プレイヤーは0始まりの数字で返される
+    @abstractmethod
+    def get_player(self):
         pass

@@ -10,27 +10,23 @@ class OthelloBoardBase(metaclass=ABCMeta):
         # 盤面の実体
         self.grid = None
 
-        # 定数
-        self.BOARD_WIDTH = 8  # 盤面の幅
-        self.BOARD_HEIGHT = 8  # 盤面の高さ
-        # 石については実装方法によりデータの持ち方が異なるため、定義はサブクラス側で行う
-
-        # 盤面の初期化
+        # 盤面の初期化(self.gridはここで初期化される)
         self.reset()
 
-    # 石を置く
+    # 指定された色と場所に基づき、石を置く
     @abstractmethod
-    def place_stone(self, pos):
+    def put_disk(self, pos, player):
         pass
 
-    # 現在の手番で石を置けるマスを探し、座標のリストで取得する
+    # 指定された色の石を置けるマスを探し、座標のリストで取得する
     @abstractmethod
-    def search_available_grid(self):
+    def search_available_grid(self, player):
         pass
 
     # 盤面の状態を8x8の2次元リストとして取得する
+    # 各要素にはDiskクラスのメンバ値(整数値)が入る
     @abstractmethod
-    def get_board(self):
+    def get_grid(self):
         pass
 
     # 盤面を初期化する
