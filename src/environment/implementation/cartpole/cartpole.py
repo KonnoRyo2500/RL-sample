@@ -55,7 +55,7 @@ class Cartpole(SinglePlayerEnvironmentBase):
     # 指定された行動を実行し、報酬を得る
     def exec_action(self, action):
         # 行動の実行
-        next_state, reward, is_terminated, is_trancated, dbg_info = self.env.step(action.value)
+        next_state, reward, is_terminated, is_truncated, dbg_info = self.env.step(action.value)
 
         # 行動回数をインクリメント
         self.step_count += 1
