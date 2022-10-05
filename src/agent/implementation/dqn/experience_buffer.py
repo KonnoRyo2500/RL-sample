@@ -3,6 +3,7 @@
 from collections import deque
 import random
 
+
 # 経験バッファクラス
 class ExperienceBuffer:
     # コンストラクタ
@@ -18,7 +19,7 @@ class ExperienceBuffer:
     # 経験バッファから経験をミニバッチとして取り出す
     def sample(self):
         # 経験が足りない場合はNoneを返す
-        if len(self.exp_buffer) < self.batch_size:
+        if len(self.exp_buffer) < self.exp_buffer.maxlen:
             return None
 
         # 経験をランダムに取り出す
@@ -30,6 +31,7 @@ class ExperienceBuffer:
             'actions': [e['action'] for e in exp_batch],
             'next_states': [e['next_state'] for e in exp_batch],
             'rewards': [e['reward'] for e in exp_batch],
+            'terminations': [e['is_terminated'] for e in exp_batch],
         }
 
         return exp_batch

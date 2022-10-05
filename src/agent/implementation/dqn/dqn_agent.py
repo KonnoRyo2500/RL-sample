@@ -100,13 +100,16 @@ class DqnAgent(AgentBase):
         elif reward < -1:
             reward = -1
 
-        # 経験e = (s, a, s', r)を作成し、経験バッファに追加する
+        # 経験e = (s, a, s', r, t)を作成し、経験バッファに追加する
+        # tはs'が終端状態かを表す真偽値
         state, action = self.last_state_action
+        is_terminated = env.is_terminal_state()
         experience = {
             'state': state,
             'action': action,
             'next_state': next_state,
             'reward': reward,
+            'is_terminated': is_terminated,
         }
         self.exp_buffer.append(experience)
 
@@ -123,31 +126,32 @@ class DqnAgent(AgentBase):
 
         # Q NetworkからQ(s, a)を得る
         states_tensor = torch.tensor(exp_batch['states']).float()
-        q_func = self.q_network(states_tensor)
+        q_values = self.q_network(states_tensor)
 
         # Target NetworkからはQ(s', a)を得る
         next_states_tensor = torch.tensor(exp_batch['next_states']).float()
-        target_q_func = self.target_network(next_states_tensor)
+        target_q_values = self.target_network(next_states_tensor)
 
         # max(a)[Q(s', a)]を求める
-        max_q_func, _ = torch.max(target_q_func, 1)
+        max_q_func, _ = torch.max(target_q_values.data, 1)
 
         # 報酬rを得る
         rewards_tensor = torch.tensor(exp_batch['rewards']).float()
 
         # 教師信号r + γmax(a)[Q(s', a)]を計算する
         # なお、Q(s', a)が最大値をとらないaについてはQ(s, a)と同じとする
-        target = q_func.clone()
+        target = q_values.detach().clone()
         actions = exp_batch['actions']
+        terminations = exp_batch['terminations']
         for i in range(len(exp_batch)):
             action_idx = env.get_action_space().index(actions[i])
-            target[i, action_idx] = rewards_tensor[i] + self.config['gamma'] * max_q_func[i]
+            target[i, action_idx] = rewards_tensor[i] + self.config['gamma'] * max_q_func[i] * (not terminations[i])
 
         # Q Networkの勾配を初期化
         self.optimizer.zero_grad()
 
         # 誤差を計算する
-        loss = self.criterion(q_func, target)
+        loss = self.criterion(q_values, target)
 
         # ミニバッチ学習により、Q Networkのパラメータを更新する
         loss.backward()
