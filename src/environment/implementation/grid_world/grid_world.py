@@ -25,8 +25,7 @@ class GridWorld(SinglePlayerEnvironmentBase):
     # コンストラクタ
     def __init__(self):
         super().__init__(Environment.GridWorld.value)
-        self.config = self._adjust_config(self.config)
-        self.state = copy(self.config['initial_pos'])
+        self.state = tuple(self.config['initial_pos'])
         self.wall = self._read_wall()
         self.step_count = 0
 
@@ -41,7 +40,7 @@ class GridWorld(SinglePlayerEnvironmentBase):
     # 指定された行動を実行し、報酬を得る
     def exec_action(self, action):
         next_pos = self._get_next_pos(action)
-        goal_pos = self.config['goal_pos']
+        goal_pos = [tuple(g_pos) for g_pos in self.config['goal_pos']]
 
         # 報酬の確定
         if not self._can_move(action):
@@ -76,21 +75,15 @@ class GridWorld(SinglePlayerEnvironmentBase):
 
     # 現在の状態が終端状態かどうかを返す
     def is_terminal_state(self):
-        is_goaled = (self.state in self.config['goal_pos'])
+        goal_pos = [tuple(g_pos) for g_pos in self.config['goal_pos']]
+        is_goaled = (self.state in goal_pos)
         is_failed = (self.step_count >= self.config['step_limit']) and (not is_goaled)
         return is_goaled or is_failed
 
     # 環境をリセットする
     def reset(self):
-        self.state = copy(self.config['initial_pos'])
+        self.state = tuple(self.config['initial_pos'])
         self.step_count = 0
-
-    # 設定値を一部調整する(型の変換などを行う)
-    def _adjust_config(self, config):
-        config['initial_pos'] = tuple(config['initial_pos'])
-        config['goal_pos'] = [tuple(p) for p in config['goal_pos']]
-
-        return config
 
     # 与えられた方向から、移動先のマスを取得する
     def _get_next_pos(self, direction):
