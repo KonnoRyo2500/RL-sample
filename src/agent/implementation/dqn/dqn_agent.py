@@ -1,6 +1,7 @@
 # 強化学習勉強用サンプルプログラム DQNエージェントクラス
 
 import copy
+from collections import namedtuple
 
 import torch
 import torch.optim as optim
@@ -104,13 +105,17 @@ class DqnAgent(AgentBase):
         # tはs'が終端状態かを表す真偽値
         state, action = self.last_state_action
         is_terminated = env.is_terminal_state()
-        experience = {
-            'state': state,
-            'action': action,
-            'next_state': next_state,
-            'reward': reward,
-            'is_terminated': is_terminated,
-        }
+        exp_class = namedtuple(
+            'Experience',
+            ['state', 'action', 'next_state', 'reward', 'is_terminated']
+        )
+        experience = exp_class(
+            state=state,
+            action=action,
+            next_state=next_state,
+            reward=reward,
+            is_terminated=is_terminated,
+        )
         self.exp_buffer.append(experience)
 
         # 各種ネットワークのパラメータ更新は別関数にて行う
@@ -125,24 +130,24 @@ class DqnAgent(AgentBase):
             return
 
         # Q NetworkからQ(s, a)を得る
-        states_tensor = torch.tensor(exp_batch['states']).float()
+        states_tensor = torch.tensor(exp_batch.states).float()
         q_values = self.q_network(states_tensor)
 
         # Target NetworkからはQ(s', a)を得る
-        next_states_tensor = torch.tensor(exp_batch['next_states']).float()
+        next_states_tensor = torch.tensor(exp_batch.next_states).float()
         target_q_values = self.target_network(next_states_tensor)
 
         # max(a)[Q(s', a)]を求める
         max_q_func, _ = torch.max(target_q_values.data, 1)
 
         # 報酬rを得る
-        rewards_tensor = torch.tensor(exp_batch['rewards']).float()
+        rewards_tensor = torch.tensor(exp_batch.rewards).float()
 
         # 教師信号r + γmax(a)[Q(s', a)]を計算する
         # なお、Q(s', a)が最大値をとらないaについてはQ(s, a)と同じとする
         target = q_values.detach().clone()
-        actions = exp_batch['actions']
-        terminations = exp_batch['terminations']
+        actions = exp_batch.actions
+        terminations = exp_batch.terminations
         for i in range(len(exp_batch)):
             action_idx = env.get_action_space().index(actions[i])
             target[i, action_idx] = rewards_tensor[i] + self.config.gamma * max_q_func[i] * (not terminations[i])

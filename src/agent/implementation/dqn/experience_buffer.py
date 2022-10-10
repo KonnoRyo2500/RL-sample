@@ -1,6 +1,6 @@
 # 強化学習勉強用サンプルプログラム 経験バッファクラス
 
-from collections import deque
+from collections import deque, namedtuple
 import random
 
 
@@ -26,12 +26,16 @@ class ExperienceBuffer:
         exp_batch = random.sample(self.exp_buffer, self.batch_size)
 
         # 辞書で取り出せるようにする
-        exp_batch = {
-            'states': [e['state'] for e in exp_batch],
-            'actions': [e['action'] for e in exp_batch],
-            'next_states': [e['next_state'] for e in exp_batch],
-            'rewards': [e['reward'] for e in exp_batch],
-            'terminations': [e['is_terminated'] for e in exp_batch],
-        }
+        exp_batch_class = namedtuple(
+            'ExperienceBatch',
+            ['states', 'actions', 'next_states', 'rewards', 'terminations']
+        )
+        exp_batch = exp_batch_class(
+            states=[e.state for e in exp_batch],
+            actions=[e.action for e in exp_batch],
+            next_states=[e.next_state for e in exp_batch],
+            rewards=[e.reward for e in exp_batch],
+            terminations=[e.is_terminated for e in exp_batch]
+        )
 
         return exp_batch
