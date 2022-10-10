@@ -65,11 +65,11 @@ class Cartpole(SinglePlayerEnvironmentBase):
         self.is_terminated = is_terminated
 
         # 1エピソード中の行動回数が一定以上であれば打ち止め
-        if self.step_count >= self.config['step_limit']:
+        if self.step_count >= self.config.step_limit:
             self.is_terminated = True
 
         # 途中で棒が倒れてしまったら罰を与える
-        if (self.step_count < self.config['step_limit']) and is_terminated:
+        if (self.step_count < self.config.step_limit) and is_terminated:
             reward = -1
 
         return reward
@@ -78,14 +78,14 @@ class Cartpole(SinglePlayerEnvironmentBase):
     # 状態が多すぎて(もしくは無限に存在して)取得できない場合はNoneを返す
     # Note: 各状態の分割数を増やしすぎると、状態空間のサイズが大きくなるため注意!
     def get_state_space(self):
-        if self.config['use_original_state']:
+        if self.config.use_original_state:
             return None
 
         # 状態の分割数の範囲を取得
-        rng_pos = range(self.config['position_part_num'])
-        rng_cart_v = range(self.config['cart_velocity_part_num'])
-        rng_angle = range(self.config['pole_angle_part_num'])
-        rng_pole_v = range(self.config['pole_velocity_part_num'])
+        rng_pos = range(self.config.position_part_num)
+        rng_cart_v = range(self.config.cart_velocity_part_num)
+        rng_angle = range(self.config.pole_angle_part_num)
+        rng_pole_v = range(self.config.pole_velocity_part_num)
 
         # 状態空間の作成
         state_space = [(p, vc, a, vp) for p, vc, a, vp in product(rng_pos, rng_cart_v, rng_angle, rng_pole_v)]
@@ -113,7 +113,7 @@ class Cartpole(SinglePlayerEnvironmentBase):
         # 取り扱いやすくするため、状態はndarrayではなくリストにしておく
         state = list(original_state)
 
-        if self.config['use_original_state']:
+        if self.config.use_original_state:
             return state
 
         # 角度はラジアン -> 度に変換しておく
@@ -130,30 +130,30 @@ class Cartpole(SinglePlayerEnvironmentBase):
 
         # カート位置の量子化
         qs_pos = self._quantize_range(
-            self.config['cart_position_min'],
-            self.config['cart_position_max'],
-            self.config['position_part_num'],
+            self.config.cart_position_min,
+            self.config.cart_position_max,
+            self.config.position_part_num,
             cart_position)
 
         # カート速度の量子化
         qs_cart_v = self._quantize_range(
-            self.config['cart_velocity_min'],
-            self.config['cart_velocity_max'],
-            self.config['cart_velocity_part_num'],
+            self.config.cart_velocity_min,
+            self.config.cart_velocity_max,
+            self.config.cart_velocity_part_num,
             cart_velocity)
 
         # 棒の角度の量子化
         qs_angle = self._quantize_range(
-            self.config['pole_angle_min'],
-            self.config['pole_angle_max'],
-            self.config['pole_angle_part_num'],
+            self.config.pole_angle_min,
+            self.config.pole_angle_max,
+            self.config.pole_angle_part_num,
             pole_angle)
 
         # 棒の速度の量子化
         qs_pole_v = self._quantize_range(
-            self.config['pole_velocity_min'],
-            self.config['pole_velocity_max'],
-            self.config['pole_velocity_part_num'],
+            self.config.pole_velocity_min,
+            self.config.pole_velocity_max,
+            self.config.pole_velocity_part_num,
             pole_velocity)
 
         # 量子化された状態を得る

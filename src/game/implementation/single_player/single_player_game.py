@@ -24,7 +24,7 @@ class SinglePlayerGame(GameBase):
     def train_agent(self):
         self.agent.switch_to_train_mode()
 
-        for i in range(self.config['num_episode']):
+        for i in range(self.config.num_episode):
             self._train_episode()
             self.env.reset()
 

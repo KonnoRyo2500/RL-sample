@@ -16,7 +16,7 @@ class Othello(MultiPlayerEnvironmentBase):
     def __init__(self):
         super().__init__(Environment.Othello.value)
 
-        self.board = self._create_board(self.config['board_implementation'])
+        self.board = self._create_board(self.config.board_implementation)
 
         # 初手プレイヤーの設定
         self.player = Player.Light

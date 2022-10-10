@@ -25,7 +25,7 @@ class GridWorld(SinglePlayerEnvironmentBase):
     # コンストラクタ
     def __init__(self):
         super().__init__(Environment.GridWorld.value)
-        self.state = tuple(self.config['initial_pos'])
+        self.state = tuple(self.config.initial_pos)
         self.wall = self._read_wall()
         self.step_count = 0
 
@@ -40,7 +40,7 @@ class GridWorld(SinglePlayerEnvironmentBase):
     # 指定された行動を実行し、報酬を得る
     def exec_action(self, action):
         next_pos = self._get_next_pos(action)
-        goal_pos = [tuple(g_pos) for g_pos in self.config['goal_pos']]
+        goal_pos = [tuple(g_pos) for g_pos in self.config.goal_pos]
 
         # 報酬の確定
         if not self._can_move(action):
@@ -49,10 +49,10 @@ class GridWorld(SinglePlayerEnvironmentBase):
         elif next_pos in goal_pos:
             # ゴール時
             i = goal_pos.index(next_pos)
-            reward = self.config['goal_reward'][i]
-        elif (self.step_count >= self.config['step_limit'] - 1) and (next_pos not in goal_pos):
+            reward = self.config.goal_reward[i]
+        elif (self.step_count >= self.config.step_limit - 1) and (next_pos not in goal_pos):
             # ステップ数上限に達してもゴールできなかったとき
-            reward = self.config['fail_reward']
+            reward = self.config.fail_reward
         else:
             # 通常移動時
             reward = 0
@@ -66,7 +66,7 @@ class GridWorld(SinglePlayerEnvironmentBase):
     # 環境の状態空間を取得
     # 状態が多すぎて(もしくは無限に存在して)取得できない場合はNoneを返す
     def get_state_space(self):
-        width, height = self.config['width'], self.config['height']
+        width, height = self.config.width, self.config.height
         return [(x, y) for x, y in product(range(width), range(height))]
 
     # 現在の状態を取得
@@ -75,14 +75,14 @@ class GridWorld(SinglePlayerEnvironmentBase):
 
     # 現在の状態が終端状態かどうかを返す
     def is_terminal_state(self):
-        goal_pos = [tuple(g_pos) for g_pos in self.config['goal_pos']]
+        goal_pos = [tuple(g_pos) for g_pos in self.config.goal_pos]
         is_goaled = (self.state in goal_pos)
-        is_failed = (self.step_count >= self.config['step_limit']) and (not is_goaled)
+        is_failed = (self.step_count >= self.config.step_limit) and (not is_goaled)
         return is_goaled or is_failed
 
     # 環境をリセットする
     def reset(self):
-        self.state = tuple(self.config['initial_pos'])
+        self.state = tuple(self.config.initial_pos)
         self.step_count = 0
 
     # 与えられた方向から、移動先のマスを取得する
@@ -103,13 +103,13 @@ class GridWorld(SinglePlayerEnvironmentBase):
         next_pos = self._get_next_pos(direction)
 
         # すでにゴールにいる場合は移動しない
-        if self.state in self.config['goal_pos']:
+        if self.state in self.config.goal_pos:
             return False
         next_x, next_y = next_pos
 
         # 範囲内の判定
-        x_is_in_grid = (0 <= next_x < self.config['width'])
-        y_is_in_grid = (0 <= next_y < self.config['height'])
+        x_is_in_grid = (0 <= next_x < self.config.width)
+        y_is_in_grid = (0 <= next_y < self.config.height)
         if (not x_is_in_grid) or (not y_is_in_grid):
             return False
 
@@ -126,7 +126,7 @@ class GridWorld(SinglePlayerEnvironmentBase):
 
     # 盤面を記述したExcelシートから、壁の情報を読み込む
     def _read_wall(self):
-        path = op.join(ENV_CONFIG_DIR('grid_world'), self.config['grid_file'])
+        path = op.join(ENV_CONFIG_DIR('grid_world'), self.config.grid_file)
         book = load_workbook(path)
         # シート名が変更されていても読み込めるようにしておく。
         sheet = book._sheets[0]
@@ -135,7 +135,7 @@ class GridWorld(SinglePlayerEnvironmentBase):
         # 各マスの上下左右にある壁を取得する。
         # 壁は、Excelシートの罫線で記述される。
         # マスは、A1セルから記述されるものとする。
-        width, height = self.config['width'], self.config['height']
+        width, height = self.config.width, self.config.height
         for x, y in product(range(width), range(height)):
             c, r = x + 1, y + 1
             cell = sheet.cell(column=c, row=r)

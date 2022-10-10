@@ -22,7 +22,7 @@ class MonteCarloAgent(AgentBase):
 
         # 行動選択インスタンス
         self.greedy = Greedy(action_space)  # greedy
-        self.epsilon_greedy = EpsilonGreedy(action_space, self.config['epsilon'])  # ε-greedy
+        self.epsilon_greedy = EpsilonGreedy(action_space, self.config.epsilon)  # ε-greedy
 
         # Returns(各状態・行動に対する収益を記録しておく配列)
         self.returns = {}
@@ -88,7 +88,7 @@ class MonteCarloAgent(AgentBase):
         contribution_rate = 1  # 寄与率。ステップt(t=0,1,...,T)において、γ^t
         for _, _, reward in exp_history:
             profit += reward * contribution_rate
-            contribution_rate *= self.config['gamma']
+            contribution_rate *= self.config.gamma
 
         return profit
 

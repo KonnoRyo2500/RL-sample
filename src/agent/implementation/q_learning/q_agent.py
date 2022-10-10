@@ -21,7 +21,7 @@ class QAgent(AgentBase):
 
         # 行動選択インスタンス
         self.greedy = Greedy(action_space)  # greedy
-        self.epsilon_greedy = EpsilonGreedy(action_space, self.config['epsilon'])  # ε-greedy
+        self.epsilon_greedy = EpsilonGreedy(action_space, self.config.epsilon)  # ε-greedy
 
         # 直前の状態とそこで選択した行動
         self.last_state_action = None
@@ -59,8 +59,8 @@ class QAgent(AgentBase):
         q = self.q_func[self.last_state_action]
 
         # 行動価値関数Q(s, a)を更新する
-        td_error = reward + self.config['gamma'] * next_max_q - q
-        self.q_func[self.last_state_action] += self.config['alpha'] * td_error
+        td_error = reward + self.config.gamma * next_max_q - q
+        self.q_func[self.last_state_action] += self.config.alpha * td_error
 
     # 行動価値関数を初期化して返す
     def _make_initial_q_function(self, action_space, state_space):

@@ -28,7 +28,7 @@ class AutoTestExecutor(TestExecutorBase):
     # シナリオファイルを読み込む
     def _load_scenario(self):
         # シナリオファイルは、環境テストフレームワークの設定ファイルと同じディレクトリに配置する
-        path = op.join(GAME_CONFIG_DIR(Game.EnvTester.value), self.config['scenario_file'])
+        path = op.join(GAME_CONFIG_DIR(Game.EnvTester.value), self.config.scenario_file)
         if not op.exists(path):
             raise RuntimeError(f'シナリオファイル {path} が存在しません')
 

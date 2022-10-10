@@ -12,7 +12,7 @@ class MultiPlayerGame(GameBase):
 
     # エージェントを学習させる
     def train_agent(self):
-        for i in range(self.config['num_episode']):
+        for i in range(self.config.num_episode):
             self._train_episode()
             self.env.reset()
 

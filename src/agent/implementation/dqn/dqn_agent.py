@@ -30,23 +30,23 @@ class DqnAgent(AgentBase):
 
         # 経験バッファ
         self.exp_buffer = ExperienceBuffer(
-            self.config['batch_size'],
-            self.config['expbuf_capacity'])
+            self.config.batch_size,
+            self.config.expbuf_capacity)
 
         # オプティマイザ
         self.optimizer = optim.RMSprop(
             self.q_network.parameters(),
-            lr=self.config['alpha'],
-            alpha=self.config['rmsprop_alpha'],
-            eps=self.config['rmsprop_epsilon'])
+            lr=self.config.alpha,
+            alpha=self.config.rmsprop_alpha,
+            eps=self.config.rmsprop_epsilon)
 
         # 行動選択アルゴリズム
         self.greedy = Greedy(action_space)  # greedy
         self.epsilon_greedy = EpsilonGreedy(
             action_space,
-            self.config['epsilon_init'],
-            self.config['epsilon_diff'],
-            self.config['epsilon_min'])  # ε-greedy
+            self.config.epsilon_init,
+            self.config.epsilon_diff,
+            self.config.epsilon_min)  # ε-greedy
 
         # 誤差関数
         self.criterion = nn.MSELoss()
@@ -78,13 +78,13 @@ class DqnAgent(AgentBase):
         self._step(reward, env)
 
         # Q Network, Target Networkの更新は一定ステップごとに行う
-        if self.total_step_count % self.config['q_update_period'] == 0:
+        if self.total_step_count % self.config.q_update_period == 0:
             self._update_q_network(env)
-        if self.total_step_count % self.config['target_update_period'] == 0:
+        if self.total_step_count % self.config.target_update_period == 0:
             self._update_target_network()
 
         # εを減少させる
-        if self.total_step_count > self.config['epsilon_decrement_step']:
+        if self.total_step_count > self.config.epsilon_decrement_step:
             self.epsilon_greedy.decrement_epsilon()
 
         self.total_step_count += 1
@@ -145,7 +145,7 @@ class DqnAgent(AgentBase):
         terminations = exp_batch['terminations']
         for i in range(len(exp_batch)):
             action_idx = env.get_action_space().index(actions[i])
-            target[i, action_idx] = rewards_tensor[i] + self.config['gamma'] * max_q_func[i] * (not terminations[i])
+            target[i, action_idx] = rewards_tensor[i] + self.config.gamma * max_q_func[i] * (not terminations[i])
 
         # Q Networkの勾配を初期化
         self.optimizer.zero_grad()

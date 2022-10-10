@@ -15,7 +15,7 @@ class DqnNetwork(nn.Module):
         super().__init__()
 
         # ネットワークの作成
-        structure = self._load_nn_structure(config['nn_structure_file_fc'])
+        structure = self._load_nn_structure(config.nn_structure_file_fc)
         self.network = self._create_network(structure, in_size, out_size)
 
     # 推論(順伝播計算)の実行

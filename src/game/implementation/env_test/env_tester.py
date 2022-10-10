@@ -26,10 +26,10 @@ class EnvTester(GameBase):
             'manual': ManualTestExecutor,  # 手動テスト
         }
 
-        if self.config['test_type'] not in executor_classes.keys():
+        if self.config.test_type not in executor_classes.keys():
             raise RuntimeError("テスト種別には 'auto' もしくは 'manual' のいずれかを指定してください")
 
-        executor_class = executor_classes[self.config['test_type']]
+        executor_class = executor_classes[self.config.test_type]
         executor_instance = executor_class(self.config, self.env)
 
         # テスト実施
