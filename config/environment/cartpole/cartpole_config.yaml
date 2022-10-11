@@ -1,8 +1,6 @@
 # Cartpole環境 設定ファイル
 # ファイル名は変更しないこと!
 
-step_limit: 200 # 1エピソードあたりの最大ステップ数。
-
 use_original_state: false # OpenAI Gym環境から得られる状態をそのまま使うか?falseの場合、離散化などの加工を行う。
 
 position_part_num: 10 # カート位置の分割数。

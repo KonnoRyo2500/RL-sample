@@ -65,11 +65,11 @@ class Cartpole(SinglePlayerEnvironmentBase):
         self.is_terminated = is_terminated
 
         # 1エピソード中の行動回数が一定以上であれば打ち止め
-        if self.step_count >= self.config.step_limit:
+        if self.step_count >= self.env.spec.max_episode_steps:
             self.is_terminated = True
 
         # 途中で棒が倒れてしまったら罰を与える
-        if (self.step_count < self.config.step_limit) and is_terminated:
+        if (self.step_count < self.env.spec.max_episode_steps) and is_terminated:
             reward = -1
 
         return reward
