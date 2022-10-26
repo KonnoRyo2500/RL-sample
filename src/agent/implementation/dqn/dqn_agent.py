@@ -123,44 +123,45 @@ class DqnAgent(AgentBase):
     # Experience Replayにより、Q Networkのパラメータを更新する
     def _update_q_network(self, env):
         # 経験バッファから一定個数の経験(経験バッチ)を取り出す
-        exp_batch = self.exp_buffer.sample()
+        exp_batches = self.exp_buffer.sample()
 
         # 経験が十分な量蓄積されていなければ更新しない
-        if exp_batch is None:
+        if exp_batches is None:
             return
 
-        # Q NetworkからQ(s, a)を得る
-        states_tensor = torch.tensor(exp_batch.states).float()
-        q_values = self.q_network(states_tensor)
+        for exp_batch in exp_batches:
+            # Q NetworkからQ(s, a)を得る
+            states_tensor = torch.tensor(exp_batch.states).float()
+            q_values = self.q_network(states_tensor)
 
-        # Target NetworkからはQ(s', a)を得る
-        next_states_tensor = torch.tensor(exp_batch.next_states).float()
-        target_q_values = self.target_network(next_states_tensor)
+            # Target NetworkからはQ(s', a)を得る
+            next_states_tensor = torch.tensor(exp_batch.next_states).float()
+            target_q_values = self.target_network(next_states_tensor)
 
-        # max(a)[Q(s', a)]を求める
-        max_q_func, _ = torch.max(target_q_values.data, 1)
+            # max(a)[Q(s', a)]を求める
+            max_q_func, _ = torch.max(target_q_values.data, 1)
 
-        # 報酬rを得る
-        rewards_tensor = torch.tensor(exp_batch.rewards).float()
+            # 報酬rを得る
+            rewards_tensor = torch.tensor(exp_batch.rewards).float()
 
-        # 教師信号r + γmax(a)[Q(s', a)]を計算する
-        # なお、Q(s', a)が最大値をとらないaについてはQ(s, a)と同じとする
-        target = q_values.detach().clone()
-        actions = exp_batch.actions
-        terminations = exp_batch.terminations
-        for i in range(len(exp_batch)):
-            action_idx = env.get_action_space().index(actions[i])
-            target[i, action_idx] = rewards_tensor[i] + self.config.gamma * max_q_func[i] * (not terminations[i])
+            # 教師信号r + γmax(a)[Q(s', a)]を計算する
+            # なお、Q(s', a)が最大値をとらないaについてはQ(s, a)と同じとする
+            target = q_values.detach().clone()
+            actions = exp_batch.actions
+            terminations = exp_batch.terminations
+            for i in range(len(exp_batch)):
+                action_idx = env.get_action_space().index(actions[i])
+                target[i, action_idx] = rewards_tensor[i] + self.config.gamma * max_q_func[i] * (not terminations[i])
 
-        # Q Networkの勾配を初期化
-        self.optimizer.zero_grad()
+            # Q Networkの勾配を初期化
+            self.optimizer.zero_grad()
 
-        # 誤差を計算する
-        loss = self.criterion(q_values, target)
+            # 誤差を計算する
+            loss = self.criterion(q_values, target)
 
-        # ミニバッチ学習により、Q Networkのパラメータを更新する
-        loss.backward()
-        self.optimizer.step()
+            # ミニバッチ学習により、Q Networkのパラメータを更新する
+            loss.backward()
+            self.optimizer.step()
 
     # Q NetworkのパラメータをTarget Networkのパラメータに反映する
     def _update_target_network(self):

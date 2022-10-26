@@ -22,20 +22,27 @@ class ExperienceBuffer:
         if len(self.exp_buffer) < self.exp_buffer.maxlen:
             return None
 
-        # 経験をランダムに取り出す
-        exp_batch = random.sample(self.exp_buffer, self.batch_size)
+        shuffled_experiences = list(self.exp_buffer.copy())
+        random.shuffle(shuffled_experiences)
 
-        # 辞書で取り出せるようにする
-        exp_batch_class = namedtuple(
-            'ExperienceBatch',
-            ['states', 'actions', 'next_states', 'rewards', 'terminations']
-        )
-        exp_batch = exp_batch_class(
-            states=[e.state for e in exp_batch],
-            actions=[e.action for e in exp_batch],
-            next_states=[e.next_state for e in exp_batch],
-            rewards=[e.reward for e in exp_batch],
-            terminations=[e.is_terminated for e in exp_batch]
-        )
+        exp_batches = []
+        for i in range(0, len(self.exp_buffer), self.batch_size):
+            # 経験をランダムに取り出す
+            exp_batch = shuffled_experiences[i : i + self.batch_size]
 
-        return exp_batch
+            # 辞書で取り出せるようにする
+            exp_batch_class = namedtuple(
+                'ExperienceBatch',
+                ['states', 'actions', 'next_states', 'rewards', 'terminations']
+            )
+            exp_batch = exp_batch_class(
+                states=[e.state for e in exp_batch],
+                actions=[e.action for e in exp_batch],
+                next_states=[e.next_state for e in exp_batch],
+                rewards=[e.reward for e in exp_batch],
+                terminations=[e.is_terminated for e in exp_batch]
+            )
+
+            exp_batches.append(exp_batch)
+
+        return exp_batches
