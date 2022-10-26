@@ -6,8 +6,8 @@ epsilon_diff: 0.001 # ε-greedy法でランダムに行動を選択する確率�
 epsilon_min: 0.1 #ε-greedy法でランダムに行動を選択する確率。(最小値)
 epsilon_decrement_step: 200 # ε-greedy法でεを減らし始めるステップ数。
 
-gamma: 0.97 # 割引率。
-alpha: 0.015 # 学習率。
+gamma: 0.99 # 割引率。
+alpha: 0.0015 # 学習率。
 batch_size: 50 # Q Networkの学習時にサンプリングする経験の個数。
 q_update_period: 10 # Q Networkを更新するステップ数の間隔。
 target_update_period: 20 # Target Networkを更新するステップ数の間隔。
