@@ -26,9 +26,9 @@ class ExperienceBuffer:
         random.shuffle(shuffled_experiences)
 
         exp_batches = []
-        for i in range(0, len(self.exp_buffer), self.batch_size):
+        for offset in range(0, len(self.exp_buffer), self.batch_size):
             # 経験をランダムに取り出す
-            exp_batch = shuffled_experiences[i : i + self.batch_size]
+            exp_batch = shuffled_experiences[offset:offset + self.batch_size]
 
             # 辞書で取り出せるようにする
             exp_batch_class = namedtuple(
