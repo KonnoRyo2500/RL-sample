@@ -6,5 +6,5 @@ import torch.nn as nn
 # DQN NNクラス(CNN)
 class CnnNetwork(nn.Module):
     # コンストラクタ
-    def __init__(self, in_size, out_size, config):
+    def __init__(self, in_size, out_size, structure):
         super().__init__()
