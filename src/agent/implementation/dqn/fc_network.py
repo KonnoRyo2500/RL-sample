@@ -12,6 +12,7 @@ class FcNetwork(nn.Module):
         # ネットワークの作成
         self.network = self._create_network(structure, in_size, out_size)
 
+    # 推論(順伝播計算)の実行
     def forward(self, x):
         return self.network(x)
 
