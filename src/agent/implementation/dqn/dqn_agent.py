@@ -6,6 +6,7 @@ from collections import namedtuple
 import torch
 import torch.optim as optim
 import torch.nn as nn
+import numpy as np
 
 from agent.base.agent_base import AgentBase
 from agent.implementation.dqn.dqn_network import DqnNetwork
@@ -22,7 +23,8 @@ class DqnAgent(AgentBase):
         super().__init__(env, Agent.Dqn.value)
 
         action_space = env.get_action_space()
-        in_size = len(env.get_state())
+        # 入力はベクトル・行列どちらもあり得るため、一旦numpyのarrayにしてサイズを取得する
+        in_size = np.array(env.get_state()).shape
         out_size = len(action_space)
 
         # 行動価値関数出力用ネットワーク
@@ -61,8 +63,15 @@ class DqnAgent(AgentBase):
     # 環境の情報を参照し、次の行動を決定する
     def decide_action(self, env):
         state = env.get_state()
+        # 状態が行列(HW)であれば、チャンネル数1の3階テンソル(CHW)に変換する
+        n_state_dim = len(np.array(state).shape)
+        if n_state_dim == 2:
+            state = [state]
+
         available_actions = env.get_available_actions()
-        q_values = self.q_network(torch.tensor(state).float())
+        # 状態をn=1のミニバッチとしてQ Networkに入力する
+        q_values = self.q_network(torch.tensor([state]).float())
+        q_values = q_values.squeeze()
 
         if self.mode == DqnAgent.OperationMode.Train:
             action = self.epsilon_greedy.select_action(available_actions, q_values)
@@ -94,6 +103,9 @@ class DqnAgent(AgentBase):
     def _step(self, reward, env):
         # 次状態s'を得る
         next_state = env.get_state()
+        n_state_dim = len(np.array(next_state).shape)
+        if n_state_dim == 2:
+            next_state = [next_state]
 
         # Reward Clippingを実施し、rの値域を[-1,1]に制限する
         if reward > 1:

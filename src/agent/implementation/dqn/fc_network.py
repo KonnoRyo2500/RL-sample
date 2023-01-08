@@ -9,6 +9,9 @@ class FcNetwork(nn.Module):
     def __init__(self, in_size, out_size, structure):
         super().__init__()
 
+        # 全結合型NNに入力される状態はベクトル(1階テンソル)なので、入力サイズの型をtuple -> intにする
+        in_size = in_size[0]
+
         # ネットワークの作成
         self.network = self._create_network(structure, in_size, out_size)
 
@@ -17,6 +20,7 @@ class FcNetwork(nn.Module):
         return self.network(x)
 
     # NN構造定義と入出力サイズに基づいてネットワークを作成する
+    # TODO: Sequentialだと流れるTensorの状態が掴めないため、Sequentialを廃止し各Moduleはメンバ変数に入れてforwardするようにする
     def _create_network(self, structure, in_size, out_size):
         actfunc_from_name = {
             'relu': nn.ReLU(),

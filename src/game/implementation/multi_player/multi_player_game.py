@@ -71,6 +71,11 @@ class MultiPlayerGame(GameBase):
                 self.env.switch_to_next_player()
                 continue
 
+            # 選択できる行動がなければパス
+            if len(self.env.get_available_actions()) == 0:
+                self.env.switch_to_next_player()
+                continue
+
             # エージェントが次の行動を決定する
             agent = self.agents[player]
             action = agent.decide_action(self.env)
