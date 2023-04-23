@@ -6,44 +6,30 @@ import torch.nn as nn
 # DQN NNクラス(全結合型NN)
 class FcNetwork(nn.Module):
     # コンストラクタ
-    def __init__(self, in_size, out_size, structure):
+    def __init__(self, in_size, out_size):
         super().__init__()
 
         # 全結合型NNに入力される状態はベクトル(1階テンソル)なので、入力サイズの型をtuple -> intにする
         in_size = in_size[0]
 
         # ネットワークの作成
-        self.network = self._create_network(structure, in_size, out_size)
+        self.network = self._create_network(in_size, out_size)
 
     # 推論(順伝播計算)の実行
     def forward(self, x):
         return self.network(x)
 
-    # NN構造定義と入出力サイズに基づいてネットワークを作成する
-    # TODO: Sequentialだと流れるTensorの状態が掴めないため、Sequentialを廃止し各Moduleはメンバ変数に入れてforwardするようにする
-    def _create_network(self, structure, in_size, out_size):
-        actfunc_from_name = {
-            'relu': nn.ReLU(),
-            'sigmoid': nn.Sigmoid(),
-        }
+    # ネットワークを作成する
+    def _create_network(self, in_size, out_size):
         network = nn.Sequential()
-        n_layers = len(structure)
 
-        for i in range(1, n_layers + 1):
-            n_units, bias, actfunc_name = structure[f'layer_{i}']
-            in_units = in_size if i == 1 else structure[f'layer_{i - 1}'][0]
-            out_units = n_units
-
-            layer_i = nn.Linear(in_features=in_units, out_features=out_units, bias=bias)
-            actfunc_i = actfunc_from_name[actfunc_name]
-
-            network.add_module(f'fc{i}', layer_i)
-            network.add_module(f'act{i}', actfunc_i)
-
-        layer_n = nn.Linear(
-            in_features=structure[f'layer_{n_layers}'][0],
-            out_features=out_size,
-            bias=structure[f'layer_{n_layers}'][1])
-        network.add_module(f'fc{n_layers + 1}', layer_n)
+        network.add_module("fc1", nn.Linear(in_size, 100, bias=True))
+        network.add_module("relu1", nn.ReLU())
+        network.add_module("fc2", nn.Linear(100, 100, bias=True))
+        network.add_module("relu2", nn.ReLU())
+        network.add_module("fc3", nn.Linear(100, 100, bias=True))
+        network.add_module("relu3", nn.ReLU())
+        network.add_module("fc4", nn.Linear(100, out_size, bias=True))
+        network.add_module("relu4", nn.ReLU())
 
         return network
