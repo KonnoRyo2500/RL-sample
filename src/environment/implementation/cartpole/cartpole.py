@@ -17,21 +17,6 @@ class PushDirection(Enum):
     Right = 1  # 右
 
 
-# 各状態の最小値、最大値
-# カートの位置
-CART_POSITION_MIN = -2.4
-CART_POSITION_MAX = 2.4
-# カートの速度
-CART_VELOCITY_MIN = float('-inf')
-CART_VELOCITY_MAX = float('inf')
-# 棒の角度(度)
-POLE_ANGLE_MIN = -24.8
-POLE_ANGLE_MAX = 24.8
-# 棒の速度
-POLE_VELOCITY_MIN = float('-inf')
-POLE_VELOCITY_MAX = float('inf')
-
-
 # Cartpole環境クラス
 class Cartpole(SinglePlayerEnvironmentBase):
     # コンストラクタ
