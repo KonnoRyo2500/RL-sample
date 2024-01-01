@@ -2,34 +2,11 @@
 
 import argparse
 
-import environment
-import agent
-import game
+from environment.environment_factory import EnvironmentFactory
+from agent.agent_factory import AgentFactory
+from game.game_factory import GameFactory
+from game.implementation.env_test.env_tester import EnvTester
 from common.const_val import Agent, Environment
-
-
-# アルゴリズム名とエージェントクラスの対応
-ALGO2CLS = {
-    Agent.QLearning.value: agent.QAgent,
-    Agent.Sarsa.value: agent.SarsaAgent,
-    Agent.MonteCarlo.value: agent.MonteCarloAgent,
-    Agent.Dqn.value: agent.DqnAgent,
-}
-
-
-# 環境名と環境クラスの対応
-ENV2CLS = {
-    Environment.GridWorld.value: environment.GridWorld,
-    Environment.Cartpole.value: environment.Cartpole,
-    Environment.Othello.value: environment.Othello,
-}
-
-# 環境名とゲームフレームワーククラスの対応
-ENV2GAME = {
-    Environment.GridWorld.value: game.SinglePlayerGame,
-    Environment.Cartpole.value: game.SinglePlayerGame,
-    Environment.Othello.value: game.MultiPlayerGame,
-}
 
 
 # コマンドライン引数の解析
@@ -65,17 +42,21 @@ def main():
     args = parse_args()
 
     # 環境の作成
-    env_instance = ENV2CLS[args.env]()
+    env_instance = EnvironmentFactory.create_instance(args.env)
+
     # エージェントの作成
-    agent_instances = None if args.test_env else [ALGO2CLS[name](env_instance) for name in args.methods]
+    if args.test_env:
+        agent_instances = None
+    else:
+        agent_instances = [AgentFactory.create_instance(name, env_instance) for name in args.methods]
 
     # ゲームフレームワークの作成
     if args.test_env:
         # 環境テスト
-        game_instance = game.EnvTester(env_instance, agent_instances)
+        game_instance = EnvTester(env_instance, agent_instances)
     else:
         # 通常実行
-        game_instance = ENV2GAME[args.env](env_instance, agent_instances)
+        game_instance = GameFactory.create_instance(args.env, env_instance, agent_instances)
 
     # 指定された環境とエージェントで学習+プレイ
     game_instance.train_agent()
